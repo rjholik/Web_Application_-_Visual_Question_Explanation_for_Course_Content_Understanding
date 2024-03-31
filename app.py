@@ -5,13 +5,24 @@ from PIL import Image
 import io
 import torch
 from transformers import Pix2StructForConditionalGeneration, Pix2StructProcessor, PretrainedConfig
-
+from transformers import pipeline
+from datasets import load_dataset
+import soundfile as sf
+import torch
+import sounddevice as sd
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Path to Current Working Directory
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
+
+
+synthesiser = pipeline("text-to-speech", "microsoft/speecht5_tts")
+
+embeddings_dataset = load_dataset("Matthijs/cmu-arctic-xvectors", split="validation")
+speaker_embedding = torch.tensor(embeddings_dataset[7306]["xvector"]).unsqueeze(0)
+# You can replace this embedding with your own as wel
 class VQAModel:
     def __init__(self):
 
@@ -66,6 +77,8 @@ def predict():
         answer = model.predict(image, question)
         return jsonify({'answer': answer})
     
+
+
 @app.route('/api/lectures')
 def get_lectures():
     base_path = os.path.join(app.static_folder, "images", "lectures")
@@ -82,7 +95,18 @@ def get_lectures():
                     'img': f'/static/images/lectures/{week_dir}/{first_image}'
                 })
     return jsonify(lectures)
-    
+
+
+@app.route('/api/text2speech', methods=['POST'])
+def text2speech():
+    text = request.json['text']
+    print(text)
+    speech = synthesiser(text, forward_params={"speaker_embeddings": speaker_embedding})
+
+   
+    # Play the audio
+    sd.play(speech["audio"], speech["sampling_rate"])
+    sd.wait()  
 @app.route('/get-images/<week>')
 def get_images(week):
     app.logger.info("Fetching image paths...")
@@ -91,16 +115,14 @@ def get_images(week):
 
     image_paths = []  # Initialize an empty list to store image paths
     try:
-        # List all png and jpg files in the specified week's directory and sort them
-        files = os.listdir(week_directory)
-        files.sort()  # Sort files to ensure consistent ordering
-        for file in files:
+        # List all png and jpg files in the specified week's directory
+        for file in os.listdir(week_directory):
             if file.endswith('.png') or file.endswith('.jpg'):
                 # Append the relative path to the image_paths list
                 image_paths.append(f'/static/images/lectures/{week}/{file}')
 
         app.logger.info("Image paths: %s", image_paths)
-        return jsonify(sorted(image_paths))
+        return jsonify(image_paths)
     except Exception as e:
         app.logger.error(f"Error fetching images from {week_directory}: {e}")
         return jsonify({"error": f"Error fetching images from {week_directory}"}), 500

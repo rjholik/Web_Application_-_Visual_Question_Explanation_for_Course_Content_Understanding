@@ -1,8 +1,64 @@
 let currentWeekImages = [];
 let currentIndex = 0;
 let lectures = [];  // Will hold the fetched lecture data.
-
 let isInLectureMode = false;
+let transcriptData = []; // Global variable to store transcript data
+
+
+// Load transcript data
+function loadTranscriptData() {
+    fetch('/static/transcript/transcript.json')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Data loaded successfully');
+            transcriptData = data; // Store the data in the global variable
+        })
+        .catch(error => {
+            console.error('Error loading JSON data:', error);
+        });
+}
+
+// Call the function to load data
+loadTranscriptData();
+
+// Define fetchAndHandleTextToSpeech function
+// function fetchAndHandleTextToSpeech(textToSend) {
+//     const apiUrl = 'http://127.0.0.1:5000/api/text2speech';
+//     fetch(apiUrl, {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify({ 'text': textToSend })
+//     })
+//     .then(response => response.json())
+//     .then(data => console.log(data))
+//     .catch(error => console.error('Error:', error));
+// }
+function fetchAndHandleTextToSpeech(textToSend) {
+    const apiUrl = 'http://127.0.0.1:5000/api/text2speech';
+    const audioPlayer = document.getElementById('audioPlayer');
+    
+    fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 'text': textToSend })
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Assuming the API returns a URL or base64 encoded data for the audio
+        if (data.audioUrl) {
+            audioPlayer.src = data.audioUrl;
+            audioPlayer.play()
+                .then(() => console.log('Audio playback started or resumed.'))
+                .catch(error => console.error('Error playing audio:', error));
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
 
 // Function to display a lecture image
 function showLectureImage(imageSrc) {
@@ -159,27 +215,20 @@ document.getElementById('lastButton').addEventListener('click', () => {
 let currentAudioSrc = ''; // Variable to keep track of the current audio source
 
 // Play button event listener
+// Event listener for the play button
 document.getElementById('playButton').addEventListener('click', () => {
     if (isInLectureMode && currentWeekImages.length > 0 && currentIndex >= 0) {
-        const audioPlayer = document.getElementById('audioPlayer');
         const imagePath = currentWeekImages[currentIndex];
         const match = imagePath.match(/week_(\d+)\/week_(\d+)_page_(\d+)/);
-        const weekNumber = match[1];
-        const pageNumber = match[3];
-        const newAudioSrc = `./static/audio/lectures/week_${weekNumber}/week_${weekNumber}_page_${pageNumber}.mp3`;
+        const weekNumber = parseInt(match[1]);
+        const pageNumber = parseInt(match[3]);
 
-        // Set the source only if it's different or if there's no source yet
-        if (currentAudioSrc !== newAudioSrc) {
-            audioPlayer.src = newAudioSrc;
-            currentAudioSrc = newAudioSrc; // Update the current audio source tracker
+        function searchByWeekAndPage(week, page) {
+            return transcriptData.filter(item => item.week === week && item.page === page);
         }
 
-        // Play or resume the audio
-        if (audioPlayer.paused || audioPlayer.ended) {
-            audioPlayer.play()
-                .then(() => console.log('Audio playback started or resumed.'))
-                .catch(error => console.error('Error playing audio:', error));
-        }
+        const textToSend = searchByWeekAndPage(weekNumber, pageNumber)[0]['transcript'];
+        fetchAndHandleTextToSpeech(textToSend);
     } else {
         console.log('No audio file associated with the current image or not in lecture mode.');
     }
@@ -188,14 +237,45 @@ document.getElementById('playButton').addEventListener('click', () => {
 // Pause button event listener
 document.getElementById('pauseButton').addEventListener('click', () => {
     const audioPlayer = document.getElementById('audioPlayer');
-    audioPlayer.pause();
-    console.log('Audio playback paused.');
+    console.log('Pause button clicked');
+    if (!audioPlayer.paused) {
+        console.log('Pausing audio');
+        audioPlayer.pause();
+    } else {
+        console.log('Audio was already paused');
+    }
 });
 
 // Stop button event listener
 document.getElementById('stopButton').addEventListener('click', () => {
     const audioPlayer = document.getElementById('audioPlayer');
-    audioPlayer.pause();
-    audioPlayer.currentTime = 0; // Reset the audio to the start
-    console.log('Audio playback stopped and reset.');
+    console.log('Stop button clicked');
+    if (!audioPlayer.paused || audioPlayer.currentTime > 0) {
+        console.log('Stopping audio');
+        audioPlayer.pause();
+        audioPlayer.currentTime = 0;
+    } else {
+        console.log('Audio was not playing');
+    }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+	const chatButton = document.getElementById('chatButton');
+	const chatWindow = document.getElementById('chatWindow');
+
+	if (!chatButton || !chatWindow) {
+		console.error('Chat elements not found!');
+		return;
+	}
+
+	chatButton.addEventListener('click', () => {
+		console.log('Chat button clicked!');
+		chatWindow.classList.toggle('open');
+	});
+});
+
+document.getElementById('homeButton').addEventListener('click', () => {
+    // Hide chat window when the home button is clicked
+    document.getElementById('chatWindow').classList.remove('open');
+    // Additional home button functionalities...
 });

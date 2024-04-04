@@ -279,3 +279,112 @@ document.getElementById('homeButton').addEventListener('click', () => {
     document.getElementById('chatWindow').classList.remove('open');
     // Additional home button functionalities...
 });
+
+document.getElementById('chatInput').addEventListener('keydown', (event) => {
+    // Check if Enter key is pressed without the Shift key
+    if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault(); // Prevent the default action to avoid a newline in the textarea
+        const chatInput = document.getElementById('chatInput');
+        const question = chatInput.value.trim();
+
+        if (question) {
+            // Trigger the same logic as the send button click
+            sendMessage(question);
+        }
+    }
+});
+
+// Refactor the send message logic into a function
+function sendMessage(question) {
+    const chatArea = document.getElementById('chatArea');
+
+    // Create a bubble for the user's question
+    const userBubble = document.createElement('div');
+    userBubble.classList.add('chat-message', 'user-message');
+    userBubble.textContent = question;
+    chatArea.appendChild(userBubble);
+
+
+    // Get the current image path
+    const imagePath = currentWeekImages[currentIndex];
+    // Prepare form data to send image and question
+    const formData = new FormData();
+
+    // Fetch the image and create a blob, then append it to the form data
+    fetch(imagePath)
+    .then(response => response.blob())
+    .then(blob => {
+        formData.append('image', blob, imagePath.split('/').pop());
+        formData.append('question', question);
+
+        // Post the form data to your API endpoint
+        fetch('/api/vqa', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Create a bubble for the model's answer
+            const modelBubble = document.createElement('div');
+            modelBubble.classList.add('chat-message', 'model-message');
+            modelBubble.textContent = data.answer; // Ensure your endpoint sends back a JSON with an 'answer' key
+            chatArea.appendChild(modelBubble);
+
+            // Auto-scroll to the latest message
+            chatArea.scrollTop = chatArea.scrollHeight;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // Handle errors, e.g., show an error message in the chat
+        });
+    });
+
+    // Clear the input field
+    chatInput.value = '';
+}
+
+
+function initializeChat() {
+    const chatArea = document.getElementById('chatArea');
+
+    // Check if the chatArea is empty before adding the initial message
+    if (!chatArea.hasChildNodes()) {
+        // Create a bubble for the model's initial message
+        const modelBubble = document.createElement('div');
+        modelBubble.classList.add('chat-message', 'model-message');
+        modelBubble.textContent = "I'm here to support you! If you have any questions or need assistance, feel free to ask.";
+        chatArea.appendChild(modelBubble);
+
+        // Ensure the initial message scrolls to the bottom
+        chatArea.scrollTop = chatArea.scrollHeight;
+    }
+}
+
+// document.getElementById('chatButton').addEventListener('click', () => {
+//     const chatWindow = document.getElementById('chatWindow');
+//     chatWindow.classList.toggle('open');
+
+//     // Initialize the chat when the chat window is opened
+//     if (chatWindow.classList.contains('open')) {
+//         initializeChat();
+//     }
+// });
+
+
+// document.getElementById('sendButton').addEventListener('click', () => {
+//     const chatInput = document.getElementById('chatInput');
+//     const question = chatInput.value.trim();
+
+//     if (question) {
+//         sendMessage(question);
+//     }
+// });
+// Event listener for the send button
+document.getElementById('sendButton').addEventListener('click', () => {
+    const chatInput = document.getElementById('chatInput');
+    const question = chatInput.value.trim();
+
+    if (question) {
+        sendMessage(question);
+    }
+});

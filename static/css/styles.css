@@ -173,3 +173,38 @@ body {
     color: white;
     border: 2px solid transparent; /* Consistent styling with other buttons */
 }
+
+.chat-message {
+    max-width: 80%;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 20px;
+    color: white;
+}
+
+.user-message {
+    background-color: #007bff; /* User message color */
+    align-self: flex-end; /* Align to the right */
+    border-bottom-right-radius: 0; /* Make one corner squared */
+}
+
+.model-message {
+    background-color: #343a40; /* Model message color */
+    align-self: flex-start; /* Align to the left */
+    border-bottom-left-radius: 0; /* Make one corner squared */
+}
+
+/* .chat-area {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    overflow-y: auto;
+    flex-grow: 1;
+} */
+
+.chat-area {
+    display: flex;
+    flex-direction: column-reverse; /* Reverse the direction */
+    overflow-y: auto;
+    height: 100%; /* Make sure the chat area takes the full height */
+}

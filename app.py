@@ -11,6 +11,12 @@ import soundfile as sf
 import torch
 import sounddevice as sd
 
+# Suppress informational messages
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # 0 = all messages are logged (default behavior)
+                                          # 1 = INFO messages are not printed
+                                          # 2 = INFO and WARNING messages are not printed
+                                          # 3 = INFO, WARNING, and ERROR messages are not printed
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Path to Current Working Directory
@@ -104,12 +110,6 @@ def text2speech():
     text = request.json['text']
     print(text)
 
-    # speech = synthesiser(text, forward_params={"speaker_embeddings": speaker_embedding})
-
-    # # Play the audio
-    # sd.play(speech["audio"], speech["sampling_rate"])
-    # sd.wait()
-
     # Truncate the text if it's too long
     max_length = 598  # Adjust based on your model's specific limitations
     if len(text) > max_length:
@@ -147,6 +147,22 @@ def get_images(week):
     except Exception as e:
         app.logger.error(f"Error fetching images from {week_directory}: {e}")
         return jsonify({"error": f"Error fetching images from {week_directory}"}), 500
+    
+@app.route('/api/vqa', methods=['POST'])
+def handle_vqa():
+    try:
+        # Extract the image and question from the request
+        file = request.files['image']
+        question = request.form['question']
+        image = Image.open(io.BytesIO(file.read())).convert("RGB")
+
+        # Get the answer from the model
+        answer = model.predict(image, question)
+
+        return jsonify({'answer': answer})
+    except Exception as e:
+        print(f"Error in VQA processing: {e}")
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
 

@@ -24,10 +24,10 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 
 
 
-synthesiser = pipeline("text-to-speech", "microsoft/speecht5_tts")
+synthesiser = pipeline("text-to-speech", "microsoft/speecht5_tts", device=0 if torch.cuda.is_available() else -1)
 
 embeddings_dataset = load_dataset("Matthijs/cmu-arctic-xvectors", split="validation")
-speaker_embedding = torch.tensor(embeddings_dataset[7306]["xvector"]).unsqueeze(0)
+speaker_embedding = torch.tensor(embeddings_dataset[7306]["xvector"]).unsqueeze(0).to(device)
 # You can replace this embedding with your own as wel
 
 

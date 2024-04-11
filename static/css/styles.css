@@ -72,7 +72,7 @@ body {
 }
 
 /* Base style for all buttons */
-.btn {
+.btn, .send-btn, .mic-btn {
     background-color: rgba(0, 123, 255, 0.35);
     color: white;
     border: 2px solid transparent;
@@ -86,7 +86,8 @@ body {
     text-align: center;
 }
 
-.btn i {
+
+.btn i, .send-btn i, .mic-btn i {
     margin: 0; /* Remove any default margin from icons */
 }
 
@@ -100,13 +101,13 @@ body {
     margin: 0 2px;
 }
 
-.btn.nav-btn.right {
-    margin-left: 10px;
-}
+/* .btn.nav-btn.right {
+    margin-left: 2px;
+} */
 
-.btn:hover, .btn:focus {
+.btn:hover, .btn:focus, .send-btn:hover, .send-btn:focus, .mic-btn:hover, .mic-btn:focus {
     color: white;
-    background-color: rgba(0, 123, 255, 0.45);
+    background-color: rgba(0, 123, 255, 0.45); /* Slightly darker on hover/focus */
 }
 
 .chat-window {
@@ -128,17 +129,24 @@ body {
     right: 0;
 }
 
-.chat-area {
-    flex-grow: 1; /* Allows chat area to take up remaining space */
-    overflow-y: auto; /* Enables scrolling for overflow content */
-}
-
 .input-area {
     display: flex;
     align-items: center;
+    /* flex-direction: column; */
     padding: 5px;
-    background: #E0F0FF; /* Keep input area white */
-    border-top: 1px solid #ccc; /* A border line between chat and input area */
+    background: #E0F0FF;
+    border-top: 1px solid #ccc;
+}
+
+.buttons-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.input-button-container {
+    display: flex;
+    align-items: center;
 }
 
 .chat-input {
@@ -194,17 +202,27 @@ body {
     border-bottom-left-radius: 0; /* Make one corner squared */
 }
 
-/* .chat-area {
-    display: flex;
-    flex-direction: column;
-    padding: 10px;
-    overflow-y: auto;
-    flex-grow: 1;
-} */
-
 .chat-area {
     display: flex;
-    flex-direction: column-reverse; /* Reverse the direction */
+    flex-grow: 1; /* Allows chat area to take up remaining space */
+    flex-direction: column-reverse; /* Stack messages from the bottom up */
+    /* align-items: flex-start; Align items to the start of the cross axis */
+    /* justify-content: flex-end; Start filling from the bottom */
     overflow-y: auto;
-    height: 100%; /* Make sure the chat area takes the full height */
+    height: 100%;
+}
+
+/* Ensure the microphone button aligns properly below the send button */
+.mic-btn {
+    width: 30px; /* Adjust if necessary */
+    height: 30px;
+    margin-top: 5px; /* Add some space above the microphone button */
+    padding: 0; /* Reset any padding */
+    align-self: center; /* Align the button to the center horizontally */
+}
+
+/* Adjust the margin for the automatic teacher button */
+#autoTeacherButton {
+    margin-left: 10px; /* Adjust as needed for spacing on the left */
+    margin-right: 10px; /* Adjust as needed for spacing on the right */
 }

@@ -26,22 +26,10 @@ function loadTranscriptData() {
 // Call the function to load data
 loadTranscriptData();
 
-// Define fetchAndHandleTextToSpeech function
-// function fetchAndHandleTextToSpeech(textToSend) {
-//     const apiUrl = 'http://127.0.0.1:5000/api/text2speech';
-//     fetch(apiUrl, {
-//         method: 'POST',
-//         headers: { 'Content-Type': 'application/json' },
-//         body: JSON.stringify({ 'text': textToSend })
-//     })
-//     .then(response => response.json())
-//     .then(data => console.log(data))
-//     .catch(error => console.error('Error:', error));
-// }
 function fetchAndHandleTextToSpeech(textToSend) {
     const apiUrl = 'http://127.0.0.1:5000/api/text2speech';
     const audioPlayer = document.getElementById('audioPlayer');
-    
+
     fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -49,16 +37,63 @@ function fetchAndHandleTextToSpeech(textToSend) {
     })
     .then(response => response.json())
     .then(data => {
-        // Assuming the API returns a URL or base64 encoded data for the audio
         if (data.audioUrl) {
+            // Use the audio URL returned by the server to play in the browser
             audioPlayer.src = data.audioUrl;
             audioPlayer.play()
-                .then(() => console.log('Audio playback started or resumed.'))
-                .catch(error => console.error('Error playing audio:', error));
+                .then(() => console.log('Audio playback started in the browser.'))
+                .catch(error => console.error('Error playing audio in the browser:', error));
         }
     })
     .catch(error => console.error('Error:', error));
 }
+
+document.getElementById('autoTeacherButton').addEventListener('click', () => {
+    if (isInLectureMode && currentWeekImages.length > 0 && currentIndex >= 0) {
+        const imagePath = currentWeekImages[currentIndex];
+        const match = imagePath.match(/week_(\d+)\/week_(\d+)_page_(\d+)/);
+        const weekNumber = parseInt(match[1]);
+        const pageNumber = parseInt(match[3]);
+
+        function searchByWeekAndPage(week, page) {
+            return transcriptData.filter(item => item.week === week && item.page === page);
+        }
+
+        const textToSend = searchByWeekAndPage(weekNumber, pageNumber)[0]['transcript'];
+        fetchAndHandleTextToSpeech(textToSend);
+    } else {
+        console.log('No audio file associated with the current image or not in lecture mode.');
+    }
+});
+
+// document.getElementById('autoTeacherButton').addEventListener('click', () => {
+//     function playCurrentSlide() {
+//         console.log('playCurrentSlide called, currentIndex:', currentIndex);
+
+//         if (currentIndex < currentWeekImages.length) {
+//             const imagePath = currentWeekImages[currentIndex];
+//             console.log('Current imagePath:', imagePath);
+
+//             const match = imagePath.match(/week_(\d+)\/week_(\d+)_page_(\d+)/);
+//             const weekNumber = parseInt(match[1]);
+//             const pageNumber = parseInt(match[3]);
+//             console.log(`Week: ${weekNumber}, Page: ${pageNumber}`);
+
+//             const textToSend = searchByWeekAndPage(weekNumber, pageNumber)[0]['transcript'];
+//             console.log('Transcript to send:', textToSend);
+
+//             fetchAndHandleTextToSpeech(textToSend, () => {
+//                 console.log('Audio playback finished for index:', currentIndex);
+//             });
+//         }
+//     }
+
+//     if (isInLectureMode && currentWeekImages.length > 0 && currentIndex >= 0) {
+//         playCurrentSlide();
+//     } else {
+//         console.log('Not in lecture mode or no slides available.');
+//     }
+// });
 
 // Function to display a lecture image
 function showLectureImage(imageSrc) {
@@ -235,14 +270,17 @@ document.getElementById('playButton').addEventListener('click', () => {
 });
 
 // Pause button event listener
+// Pause/Play toggle button event listener
 document.getElementById('pauseButton').addEventListener('click', () => {
     const audioPlayer = document.getElementById('audioPlayer');
-    console.log('Pause button clicked');
     if (!audioPlayer.paused) {
+        // If the audio is playing, pause it
         console.log('Pausing audio');
         audioPlayer.pause();
     } else {
-        console.log('Audio was already paused');
+        // If the audio is paused, resume playing it
+        console.log('Resuming audio');
+        audioPlayer.play();
     }
 });
 
@@ -294,20 +332,26 @@ document.getElementById('chatInput').addEventListener('keydown', (event) => {
     }
 });
 
-// Refactor the send message logic into a function
 function sendMessage(question) {
     const chatArea = document.getElementById('chatArea');
+
+    if (!isInLectureMode) {
+        // Display a message that a slide needs to be selected first
+        const warningBubble = document.createElement('div');
+        warningBubble.classList.add('chat-message', 'model-message');
+        warningBubble.textContent = "Please select a slide to start chatting.";
+        chatArea.insertBefore(warningBubble, chatArea.firstChild); // Insert at the beginning
+        return; // Exit the function to avoid further processing
+    }
 
     // Create a bubble for the user's question
     const userBubble = document.createElement('div');
     userBubble.classList.add('chat-message', 'user-message');
     userBubble.textContent = question;
-    chatArea.appendChild(userBubble);
-
+    chatArea.insertBefore(userBubble, chatArea.firstChild); // Insert at the beginning
 
     // Get the current image path
     const imagePath = currentWeekImages[currentIndex];
-    // Prepare form data to send image and question
     const formData = new FormData();
 
     // Fetch the image and create a blob, then append it to the form data
@@ -327,8 +371,8 @@ function sendMessage(question) {
             // Create a bubble for the model's answer
             const modelBubble = document.createElement('div');
             modelBubble.classList.add('chat-message', 'model-message');
-            modelBubble.textContent = data.answer; // Ensure your endpoint sends back a JSON with an 'answer' key
-            chatArea.appendChild(modelBubble);
+            modelBubble.textContent = data.answer; // Use the actual response
+            chatArea.insertBefore(modelBubble, chatArea.firstChild); // Insert at the beginning
 
             // Auto-scroll to the latest message
             chatArea.scrollTop = chatArea.scrollHeight;
@@ -360,25 +404,7 @@ function initializeChat() {
     }
 }
 
-// document.getElementById('chatButton').addEventListener('click', () => {
-//     const chatWindow = document.getElementById('chatWindow');
-//     chatWindow.classList.toggle('open');
 
-//     // Initialize the chat when the chat window is opened
-//     if (chatWindow.classList.contains('open')) {
-//         initializeChat();
-//     }
-// });
-
-
-// document.getElementById('sendButton').addEventListener('click', () => {
-//     const chatInput = document.getElementById('chatInput');
-//     const question = chatInput.value.trim();
-
-//     if (question) {
-//         sendMessage(question);
-//     }
-// });
 // Event listener for the send button
 document.getElementById('sendButton').addEventListener('click', () => {
     const chatInput = document.getElementById('chatInput');
@@ -388,3 +414,52 @@ document.getElementById('sendButton').addEventListener('click', () => {
         sendMessage(question);
     }
 });
+
+document.getElementById('micButton').addEventListener('click', () => {
+    // Implement speech-to-text functionality
+    console.log('Microphone button clicked!');
+});
+
+
+if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+
+    recognition.lang = 'en-US';
+    recognition.continuous = false; // Consider changing to true if you want to capture more than one phrase
+    recognition.interimResults = false; // Keep false to only handle the final result
+
+    recognition.onstart = function() {
+        console.log("Speech recognition started.");
+    };
+
+    recognition.onresult = function(event) {
+        let finalTranscript = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+            if (event.results[i].isFinal) {
+                finalTranscript += event.results[i][0].transcript;
+            }
+        }
+
+        console.log("Final transcript: " + finalTranscript);
+        if (finalTranscript.trim().length > 0) {
+            document.getElementById('chatInput').value = finalTranscript;
+        }
+    };
+
+    recognition.onerror = function(event) {
+        console.error("Speech recognition error", event.error);
+    };
+
+    recognition.onend = function() {
+        console.log("Speech recognition ended.");
+    };
+
+    document.getElementById('micButton').addEventListener('click', () => {
+        console.log('Microphone button clicked');
+        recognition.start();
+    });
+} else {
+    console.error("Speech recognition not supported in this browser.");
+    document.getElementById('micButton').disabled = true;
+}

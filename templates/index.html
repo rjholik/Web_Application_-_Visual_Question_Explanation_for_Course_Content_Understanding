@@ -47,22 +47,14 @@
     <div class="nav-buttons position-absolute" style="left: 50%; transform: translateX(-50%); bottom: 20px;">
         <button class="btn nav-btn" id="firstButton"><i class="fas fa-angle-double-left"></i></button> <!-- First image button -->
         <button class="btn nav-btn left" id="prevButton"><i class="fas fa-angle-left"></i></button>
+
+        <!-- Automatic Teacher Button -->
+        <!-- <button class="btn nav-btn" id="autoTeacherButton">Automatic Teacher</button> -->
+        <button id="autoTeacherButton" class="btn nav-btn">Automatic Teacher</button>
+
         <button class="btn nav-btn right" id="nextButton"><i class="fas fa-angle-right"></i></button>
         <button class="btn nav-btn" id="lastButton"><i class="fas fa-angle-double-right"></i></button> <!-- Last image button -->
     </div>
-
-    <!-- <div id="chatWindow" class="chat-window">
-        <!-- <p>Chat window content...</p> -->
-        <!-- <div id="chatArea" class="chat-area">
-            <p>Chat messages will appear here...</p>
-        </div>
-
-        <!-- Input area for typing messages -->
-        <!-- <div id="inputArea" class="input-area">
-            <textarea id="chatInput" class="chat-input" placeholder="Type your question here..."></textarea>
-            <button id="sendButton" class="btn send-btn"><i class="fas fa-arrow-up"></i></button>
-        </div>
-    </div> -->
 
     <div id="chatWindow" class="chat-window">
         <div id="chatArea" class="chat-area">
@@ -70,7 +62,10 @@
         </div>
         <div id="inputArea" class="input-area">
             <textarea id="chatInput" class="chat-input" placeholder="Type your question here..."></textarea>
-            <button id="sendButton" class="btn send-btn"><i class="fas fa-arrow-up"></i></button>
+            <div class="buttons-container">
+                <button id="sendButton" class="btn send-btn"><i class="fas fa-arrow-up"></i></button>
+                <button id="micButton" class="btn mic-btn"><i class="fas fa-microphone"></i></button>
+            </div>
         </div>
     </div>
 

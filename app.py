@@ -5,6 +5,7 @@ import uuid
 import atexit
 from apscheduler.schedulers.background import BackgroundScheduler
 import shutil
+import sqlite3 
 import logging
 from PIL import Image
 import io
@@ -15,6 +16,7 @@ from datasets import load_dataset
 import soundfile as sf
 import torch
 import sounddevice as sd
+from flask import Flask, request, jsonify, abort, session
 
 import whisper
 
@@ -29,6 +31,10 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # Path to Current Working Directory
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
+conn=sqlite3.connect('users.db')
+
+c=conn.cursor()
+
 
 
 synthesiser = pipeline("text-to-speech", "microsoft/speecht5_tts", device=0 if torch.cuda.is_available() else -1)
@@ -39,7 +45,30 @@ speaker_embedding = torch.tensor(embeddings_dataset[7306]["xvector"]).unsqueeze(
 
 stt_model = whisper.load_model("base")
 
+def get_db_connection():
+    conn = sqlite3.connect('users.db')
+    conn.row_factory = sqlite3.Row
+    return conn
 
+def does_table_exist(cursor, table_name):
+    # Query to check if the specified table exists in the sqlite_master table
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name=?", (table_name,))
+    return cursor.fetchone() is not None
+
+# Connect to the SQLite database
+conn = sqlite3.connect('example.db')
+c = conn.cursor()
+
+# Check if the 'users' table exists and create it if it does not
+if not does_table_exist(c, 'users'):
+    c.execute('''CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, password TEXT, user_type TEXT)''')
+    conn.commit()
+    print("Users table created successfully")
+else:
+    print("Users table already exists")
+
+# Close the database connection
+conn.close()
 class VQAModel:
     def __init__(self):
 
@@ -237,7 +266,111 @@ def transcribe_audio():
 
     # Cleanup and response
     os.remove(audio_path)  # Clean up the temporary file
-    return jsonify({"transcription": transcription})
+    return jsonify({"tra nscription": transcription})
+
+
+#create user
+@app.route('/user', methods=['POST'])
+def create_user():
+    data = request.json
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('INSERT INTO users (username, password, user_type) VALUES (?, ?, ?)',
+                   (data['username'], data['password'], data['user_type']))
+    conn.commit()
+    conn.close()
+    return jsonify({'status': 'User created successfully'}), 201
+
+#update user
+@app.route('/user/<int:user_id>', methods=['PUT'])
+def update_user(user_id):
+    data = request.json
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('UPDATE users SET username = ?, password = ?, user_type = ? WHERE id = ?',
+                   (data['username'], data['password'], data['user_type'], user_id))
+    conn.commit()
+    conn.close()
+    return jsonify({'status': 'User updated successfully'})
+
+#delete user
+@app.route('/user/<int:user_id>', methods=['DELETE'])
+def delete_user(user_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('DELETE FROM users WHERE id = ?', (user_id,))
+    conn.commit()
+    conn.close()
+    return jsonify({'status': 'User deleted successfully'})
+
+#login
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    
+    if not data or 'username' not in data or 'password' not in data:
+        abort(400, description="Please provide both username and password")
+
+    username = data['username']
+    password = data['password']
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # Query to fetch the user details
+    cursor.execute("SELECT * FROM users WHERE username = ? AND password = ?", (username, password))
+    user = cursor.fetchone()
+    conn.close()
+
+    if user:
+        session['logged_in'] = True
+        session['username'] = user['username']
+        session['user_type'] = user['user_type']  # Store user type in session
+        return jsonify({
+            'status': 'Logged in successfully',
+            'user_type': user['user_type']  # Return user type in response
+        })
+    else:
+        return jsonify({'status': 'Login failed'}), 401
+
+@app.route('/logout', methods=['GET'])
+def logout():
+    session.pop('logged_in', None)
+    session.pop('username', None)
+    return jsonify({'status': 'Logged out successfully'})
+
+#get all users
+@app.route('/users/all', methods=['GET'])
+def get_all_users():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM users')
+    users = cursor.fetchall()
+    conn.close()
+    return jsonify([dict(user) for user in users])
+
+#get all admins
+@app.route('/users/admins', methods=['GET'])
+def get_admins():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM users WHERE user_type = 'admin'")
+    admins = cursor.fetchall()
+    conn.close()
+    return jsonify([dict(admin) for admin in admins])
+
+#get all users
+@app.route('/users/regular', methods=['GET'])
+def get_regular_users():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM users WHERE user_type = 'user'")
+    regular_users = cursor.fetchall()
+    conn.close()
+    return jsonify([dict(user) for user in regular_users])
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

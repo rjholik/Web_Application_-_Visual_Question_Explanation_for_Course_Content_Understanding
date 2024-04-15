@@ -4,6 +4,9 @@ let lectures = [];  // Will hold the fetched lecture data.
 let isInLectureMode = false;
 let transcriptData = []; // Global variable to store transcript data
 
+let automaticTeacherActive = false;
+let audioPlayer = document.getElementById('audioPlayer');
+
 
 // Load transcript data
 function loadTranscriptData() {
@@ -49,51 +52,16 @@ function fetchAndHandleTextToSpeech(textToSend) {
 }
 
 document.getElementById('autoTeacherButton').addEventListener('click', () => {
-    if (isInLectureMode && currentWeekImages.length > 0 && currentIndex >= 0) {
-        const imagePath = currentWeekImages[currentIndex];
-        const match = imagePath.match(/week_(\d+)\/week_(\d+)_page_(\d+)/);
-        const weekNumber = parseInt(match[1]);
-        const pageNumber = parseInt(match[3]);
-
-        function searchByWeekAndPage(week, page) {
-            return transcriptData.filter(item => item.week === week && item.page === page);
-        }
-
-        const textToSend = searchByWeekAndPage(weekNumber, pageNumber)[0]['transcript'];
-        fetchAndHandleTextToSpeech(textToSend);
+    if (!automaticTeacherActive) {
+        automaticTeacherActive = true;
+        console.log('Automatic teacher mode started.');
+        playCurrentAndAdvance();  // Start from current slide
     } else {
-        console.log('No audio file associated with the current image or not in lecture mode.');
+        automaticTeacherActive = false;
+        audioPlayer.pause();
+        console.log('Automatic teacher mode stopped by user.');
     }
 });
-
-// document.getElementById('autoTeacherButton').addEventListener('click', () => {
-//     function playCurrentSlide() {
-//         console.log('playCurrentSlide called, currentIndex:', currentIndex);
-
-//         if (currentIndex < currentWeekImages.length) {
-//             const imagePath = currentWeekImages[currentIndex];
-//             console.log('Current imagePath:', imagePath);
-
-//             const match = imagePath.match(/week_(\d+)\/week_(\d+)_page_(\d+)/);
-//             const weekNumber = parseInt(match[1]);
-//             const pageNumber = parseInt(match[3]);
-//             console.log(`Week: ${weekNumber}, Page: ${pageNumber}`);
-
-//             const textToSend = searchByWeekAndPage(weekNumber, pageNumber)[0]['transcript'];
-//             console.log('Transcript to send:', textToSend);
-
-//             fetchAndHandleTextToSpeech(textToSend, () => {
-//                 console.log('Audio playback finished for index:', currentIndex);
-//             });
-//         }
-//     }
-
-//     if (isInLectureMode && currentWeekImages.length > 0 && currentIndex >= 0) {
-//         playCurrentSlide();
-//     } else {
-//         console.log('Not in lecture mode or no slides available.');
-//     }
-// });
 
 // Function to display a lecture image
 function showLectureImage(imageSrc) {
@@ -463,3 +431,63 @@ if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
     console.error("Speech recognition not supported in this browser.");
     document.getElementById('micButton').disabled = true;
 }
+
+function playCurrentAndAdvance() {
+    if (currentIndex < currentWeekImages.length && isInLectureMode && automaticTeacherActive) {
+        const imagePath = currentWeekImages[currentIndex];
+        const match = imagePath.match(/week_(\d+)\/week_(\d+)_page_(\d+)/);
+        const weekNumber = parseInt(match[1]);
+        const pageNumber = parseInt(match[3]);
+        const textToSend = transcriptData.find(item => item.week === weekNumber && item.page === pageNumber)['transcript'];
+
+        fetch('http://127.0.0.1:5000/api/text2speech', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 'text': textToSend })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.audioUrl && automaticTeacherActive) {
+                audioPlayer.src = data.audioUrl;
+                audioPlayer.play().then(() => {
+                    audioPlayer.onended = () => {
+                        if (currentIndex < currentWeekImages.length - 1 && automaticTeacherActive) {
+                            currentIndex++;
+                            showLectureImage(currentWeekImages[currentIndex]);
+                            playCurrentAndAdvance();
+                        } else {
+                            automaticTeacherActive = false;
+                            console.log('Finished all slides or stopped.');
+                        }
+                    };
+                }).catch(error => console.error('Error playing audio:', error));
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    } else {
+        automaticTeacherActive = false; // Ensure to reset the flag if conditions are not met
+    }
+}
+
+document.getElementById('loginForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    var username = document.getElementById('username').value;
+    var password = document.getElementById('password').value;
+    
+    // Assume login is successful if username and password are filled
+    if (username && password) {
+        // Hide login section
+        document.getElementById('loginSection').style.display = 'none';
+
+        // Show navigation and control buttons
+        document.querySelector('.nav-buttons').style.display = 'block';
+        document.querySelectorAll('.position-absolute').forEach(function(element) {
+            element.style.display = 'block';
+        });
+
+        // Update the page to show logged-in state
+        document.getElementById('defaultText').querySelector('p').textContent = "Welcome, " + username + "! You can now navigate through the slides.";
+    } else {
+        alert("Please enter both username and password.");
+    }
+});

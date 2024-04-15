@@ -7,6 +7,15 @@ html, body {
     background-color: #ffffff;
 }
 
+#defaultText {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center the items horizontally */
+    justify-content: center; /* Center the items vertically */
+    height: 100%; /* Full height */
+    padding: 20px; /* Padding around */
+}
+
 .d-flex {
     width: 100%;
     text-align: center;
@@ -54,6 +63,18 @@ body {
     /* color: white; */
     color: #333; /* Dark gray color for the text */
     margin-top: 2px;
+}
+
+.rounded-image {
+    width: 100%; /* Adjust width as needed */
+    max-width: 600px; /* Maximum width to ensure it fits well */
+    border-radius: 20px; /* Rounded corners */
+    margin: 20px auto; /* Center the image */
+    display: block; /* Ensures the image is block level to center correctly */
+    -webkit-mask-image: radial-gradient(ellipse at center, white 70%, transparent 100%),
+                        linear-gradient(to top, transparent, white 25%, transparent 75%);
+    mask-image: radial-gradient(ellipse at center, white 70%, transparent 100%),
+                linear-gradient(to top, transparent, white 25%, transparent 75%);
 }
 
 .controls {
@@ -225,4 +246,55 @@ body {
 #autoTeacherButton {
     margin-left: 10px; /* Adjust as needed for spacing on the left */
     margin-right: 10px; /* Adjust as needed for spacing on the right */
+}
+
+.nav-buttons, .position-absolute {
+    display: none; /* Hide navigation and control buttons */
+}
+
+.text-center {
+    max-width: 600px; /* Or your preferred max width */
+    text-align: center;
+}
+
+.login-section {
+    width: 340px; /* Adjust the width to fit the form more snugly */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px; /* Space between text content and login form */
+    padding: 10px; /* Smaller padding to reduce the excessive background */
+    background-color: #f1f1f1;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center align all items in the vertical stack */
+    width: 300px; /* Set a fixed width for the form */
+    padding: 10px; /* Slightly reduced padding */
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1); /* Subtle shadow */
+    background: white;
+    border-radius: 10px;
+    margin-top: 10px; /* Adds some space from the top element */
+}
+
+.login-form input[type="text"],
+.login-form input[type="password"],
+.login-form button {
+    width: 100%; /* Use full width of the form */
+    padding: 10px;
+    margin-top: 10px; /* Space between fields */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.login-form button {
+    background-color: #007bff;
+    color: white;
+    cursor: pointer; /* Ensures the cursor changes to a pointer when hovering over the button */
+    border: none; /* Removes border */
 }

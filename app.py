@@ -44,7 +44,7 @@ embeddings_dataset = load_dataset("Matthijs/cmu-arctic-xvectors", split="validat
 speaker_embedding = torch.tensor(embeddings_dataset[7306]["xvector"]).unsqueeze(0).to(device)
 # You can replace this embedding with your own as wel
 
-#stt_model = whisper.load_model("base")
+stt_model = whisper.load_model("base")
 
 def get_db_connection():
     conn = sqlite3.connect('users.db')

@@ -15,6 +15,7 @@ from transformers import pipeline
 from datasets import load_dataset
 import soundfile as sf
 import torch
+import secrets
 import sounddevice as sd
 from flask import Flask, request, jsonify, abort, session
 
@@ -107,6 +108,7 @@ class VQAModel:
 model = VQAModel()
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = secrets.token_urlsafe(16)
 app.logger.setLevel(logging.INFO)  # Set the logger level directly
 
 

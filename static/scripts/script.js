@@ -476,18 +476,46 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
     
     // Assume login is successful if username and password are filled
     if (username && password) {
-        // Hide login section
-        document.getElementById('loginSection').style.display = 'none';
-
-        // Show navigation and control buttons
-        document.querySelector('.nav-buttons').style.display = 'block';
-        document.querySelectorAll('.position-absolute').forEach(function(element) {
-            element.style.display = 'block';
+        fetch('http://127.0.0.1:5000/login', {
+            method: 'POST', // Set the method to POST
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username: username,
+                password: password
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                console.log('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Success:', data);
+            if (data['status'] == 'Logged in successfully') {
+                console.log('Login success:', data);
+                // Update the page to show logged-in state
+    
+                // Hide login section
+                document.getElementById('loginSection').style.display = 'none';
+    
+                // Show navigation and control buttons
+                document.querySelector('.nav-buttons').style.display = 'block';
+                document.querySelectorAll('.position-absolute').forEach(function(element) {
+                    element.style.display = 'block';
+                });
+                document.getElementById('defaultText').querySelector('p').textContent = "Welcome, " + username + "! You can now navigate through the slides.";
+            } else {
+                alert("Invalid username or password.");
+            }
+        })
+        .catch(error => {
+            console.error('There was an error!', error);
         });
-
-        // Update the page to show logged-in state
-        document.getElementById('defaultText').querySelector('p').textContent = "Welcome, " + username + "! You can now navigate through the slides.";
     } else {
         alert("Please enter both username and password.");
     }
+    
 });

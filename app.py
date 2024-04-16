@@ -43,7 +43,7 @@ embeddings_dataset = load_dataset("Matthijs/cmu-arctic-xvectors", split="validat
 speaker_embedding = torch.tensor(embeddings_dataset[7306]["xvector"]).unsqueeze(0).to(device)
 # You can replace this embedding with your own as wel
 
-stt_model = whisper.load_model("base")
+#stt_model = whisper.load_model("base")
 
 def get_db_connection():
     conn = sqlite3.connect('users.db')
@@ -56,9 +56,8 @@ def does_table_exist(cursor, table_name):
     return cursor.fetchone() is not None
 
 # Connect to the SQLite database
-conn = sqlite3.connect('example.db')
+conn = sqlite3.connect('users.db')
 c = conn.cursor()
-
 # Check if the 'users' table exists and create it if it does not
 if not does_table_exist(c, 'users'):
     c.execute('''CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, password TEXT, user_type TEXT)''')

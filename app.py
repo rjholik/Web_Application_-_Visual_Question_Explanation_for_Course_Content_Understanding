@@ -15,13 +15,9 @@ from transformers import pipeline
 from datasets import load_dataset
 import soundfile as sf
 import torch
+import secrets
 import sounddevice as sd
-from flask import Flask, abort, session
-
-from werkzeug.security import check_password_hash
-from flask_cors import CORS  # Import CORS
-
-import json
+from flask import Flask, request, jsonify, abort, session
 
 import whisper
 
@@ -36,6 +32,10 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # Path to Current Working Directory
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
+conn=sqlite3.connect('users.db')
+
+c=conn.cursor()
+
 
 
 synthesiser = pipeline("text-to-speech", "microsoft/speecht5_tts", device=0 if torch.cuda.is_available() else -1)
@@ -44,8 +44,7 @@ embeddings_dataset = load_dataset("Matthijs/cmu-arctic-xvectors", split="validat
 speaker_embedding = torch.tensor(embeddings_dataset[7306]["xvector"]).unsqueeze(0).to(device)
 # You can replace this embedding with your own as wel
 
-stt_model = whisper.load_model("base")
-
+#stt_model = whisper.load_model("base")
 
 def get_db_connection():
     conn = sqlite3.connect('users.db')
@@ -57,29 +56,19 @@ def does_table_exist(cursor, table_name):
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name=?", (table_name,))
     return cursor.fetchone() is not None
 
-def setup_database():
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
+# Connect to the SQLite database
+conn = sqlite3.connect('users.db')
+c = conn.cursor()
+# Check if the 'users' table exists and create it if it does not
+if not does_table_exist(c, 'users'):
+    c.execute('''CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, password TEXT, user_type TEXT)''')
+    conn.commit()
+    print("Users table created successfully")
+else:
+    print("Users table already exists")
 
-        # Check if the 'users' table exists and create it if it does not
-        if not does_table_exist(cursor, 'users'):
-            cursor.execute('''CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, password TEXT, user_type TEXT)''')
-            conn.commit()
-            print("Users table created successfully")
-        else:
-            print("Users table already exists")
-
-    except sqlite3.DatabaseError as e:
-        print(f"Database error: {e}")
-    except Exception as e:
-        print(f"An error occurred: {e}")
-    finally:
-        conn.close()
-
-# Call the function to ensure the setup is processed
-setup_database()
-
+# Close the database connection
+conn.close()
 class VQAModel:
     def __init__(self):
 
@@ -118,11 +107,9 @@ class VQAModel:
 
 model = VQAModel()
 
-
-app = Flask(__name__, static_folder='static')
+app = Flask(__name__)
+app.config['SECRET_KEY'] = secrets.token_urlsafe(16)
 app.logger.setLevel(logging.INFO)  # Set the logger level directly
-
-CORS(app)  # Initialize CORS on your app, this is crucial for cross-origin requests if needed
 
 
 # Define the path for the audio folder within the user's home directory
@@ -211,6 +198,23 @@ def predict():
         return jsonify({'answer': answer})
     
 
+
+@app.route('/api/lectures')
+def get_lectures():
+    base_path = os.path.join(app.static_folder, "images", "lectures")
+    lectures = []
+    for week_dir in sorted(os.listdir(base_path)):
+        week_path = os.path.join(base_path, week_dir)
+        if os.path.isdir(week_path):
+            images = sorted(os.listdir(week_path))
+            if images:
+                # Assuming all images are relevant and sorted alphabetically
+                first_image = images[0]
+                lectures.append({
+                    'name': week_dir,
+                    'img': f'/static/images/lectures/{week_dir}/{first_image}'
+                })
+    return jsonify(lectures)
 # Set a course into session after user selects it
 @app.route('/set_course/<course_name>')
 def set_course(course_name):
@@ -245,7 +249,6 @@ def get_courses():
                 'image': image_url
             })
     return jsonify(courses)
-    
 @app.route('/api/lectures/<course_name>')
 def get_lectures_for_course(course_name):
     base_path = os.path.join(app.static_folder, "courses", course_name)
@@ -268,6 +271,25 @@ def get_lectures_for_course(course_name):
     except Exception as e:
         app.logger.error("Failed to fetch lectures:", exc_info=True)
         return jsonify({"error": str(e)}), 500
+@app.route('/get-images/<week>')
+def get_images(week):
+    app.logger.info("Fetching image paths...")
+    # Construct the path to the specific week's directory
+    week_directory = os.path.join(app.static_folder, "images", "lectures", week)
+
+    image_paths = []  # Initialize an empty list to store image paths
+    try:
+        # List all png and jpg files in the specified week's directory
+        for file in os.listdir(week_directory):
+            if file.endswith('.png') or file.endswith('.jpg'):
+                # Append the relative path to the image_paths list
+                image_paths.append(f'/static/images/lectures/{week}/{file}')
+
+        app.logger.info("Image paths: %s", image_paths)
+        return jsonify(image_paths)
+    except Exception as e:
+        app.logger.error(f"Error fetching images from {week_directory}: {e}")
+        return jsonify({"error": f"Error fetching images from {week_directory}"}), 500
     
 @app.route('/api/vqa', methods=['POST'])
 def handle_vqa():
@@ -338,57 +360,31 @@ def delete_user(user_id):
     return jsonify({'status': 'User deleted successfully'})
 
 #login
-# @app.route('/login', methods=['POST'])
-# def login():
-#     data = request.get_json()
-    
-#     if not data or 'username' not in data or 'password' not in data:
-#         abort(400, description="Please provide both username and password")
-
-#     username = data['username']
-#     password = data['password']
-
-#     conn = get_db_connection()
-#     cursor = conn.cursor()
-
-#     # Query to fetch the user details
-#     cursor.execute("SELECT * FROM users WHERE username = ? AND password = ?", (username, password))
-#     user = cursor.fetchone()
-#     conn.close()
-
-#     if user:
-#         session['logged_in'] = True
-#         session['username'] = user['username']
-#         session['user_type'] = user['user_type']  # Store user type in session
-#         return jsonify({
-#             'status': 'Logged in successfully',
-#             'user_type': user['user_type']  # Return user type in response
-#         })
-#     else:
-#         return jsonify({'status': 'Login failed'}), 401
-
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
+    
     if not data or 'username' not in data or 'password' not in data:
-        abort(400, "Please provide both username and password")
+        abort(400, description="Please provide both username and password")
 
     username = data['username']
     password = data['password']
 
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
+
+    # Query to fetch the user details
+    cursor.execute("SELECT * FROM users WHERE username = ? AND password = ?", (username, password))
     user = cursor.fetchone()
     conn.close()
 
-    if user and check_password_hash(user['password'], password):
+    if user:
         session['logged_in'] = True
         session['username'] = user['username']
-        session['user_type'] = user['user_type']
+        session['user_type'] = user['user_type']  # Store user type in session
         return jsonify({
             'status': 'Logged in successfully',
-            'user_type': user['user_type']
+            'user_type': user['user_type']  # Return user type in response
         })
     else:
         return jsonify({'status': 'Login failed'}), 401

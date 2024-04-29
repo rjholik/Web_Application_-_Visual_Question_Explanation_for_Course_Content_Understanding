@@ -331,3 +331,11 @@ body {
 .post-login {
     display: none; /* Initially hide these elements */
 }
+
+.btn.nav-btn {
+    padding: 5px 10px;  /* Example padding */
+    margin-right: 5px;  /* Space between buttons */
+    background-color: rgba(0, 123, 255, 0.35); /* Example background color */
+    color: white; /* Text color */
+    border: 2px solid transparent; /* Border settings */
+}

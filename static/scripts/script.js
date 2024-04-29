@@ -229,22 +229,15 @@ function displayLectures(lectures) {
     const returnArrowContainer = document.createElement('div');
     returnArrowContainer.className = 'return-arrow-container';
     returnArrowContainer.addEventListener('click', () => {
-        displayCourses(cachedCourses);  // Assuming you have cached the courses data
+        displayCourses(cachedCourses);  // Function to return to the courses display
     });
 
     const returnArrowImg = document.createElement('img');
     returnArrowImg.src = '/static/images/return_arrow.webp';
     returnArrowImg.alt = 'Return';
     returnArrowImg.className = 'return-arrow-image';
+
     returnArrowContainer.appendChild(returnArrowImg);
-
-    // Add a title below the return arrow
-    const returnArrowTitle = document.createElement('div');
-    returnArrowTitle.textContent = 'Back to Courses';
-    returnArrowTitle.className = 'return-arrow-title'; // Add CSS class for styling
-    returnArrowContainer.appendChild(returnArrowTitle);
-
-    // returnArrowContainer.appendChild(returnArrowImg);
     menu.appendChild(returnArrowContainer);
 
     // Proceed to add lectures

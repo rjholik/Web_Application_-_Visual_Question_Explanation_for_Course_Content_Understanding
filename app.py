@@ -528,8 +528,9 @@ def get_regular_users():
     conn.close()
     return jsonify([dict(user) for user in regular_users])
 
-
-
+@app.route('/user_administration')
+def user_administration():
+    return render_template('user_administration.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

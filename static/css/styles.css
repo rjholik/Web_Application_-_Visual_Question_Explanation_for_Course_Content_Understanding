@@ -46,7 +46,7 @@ body {
 }
 
 /* Common styles for images that should scale on hover */
-.menu-item-image, .course-image, .return-arrow-image {
+.menu-item-image, .course-image {
     width: 100px; /* Adjust the size as needed */
     height: auto; /* Maintain aspect ratio */
     border-radius: 5px; /* Rounded corners for aesthetics */
@@ -55,6 +55,15 @@ body {
     display: block; /* Ensure proper handling of margin and centering */
     margin: 0 auto 0px; /* Center the image and add consistent space below */
 }
+
+.return-arrow-container {
+    display: flex;  /* Use flexbox for layout */
+    align-items: center; /* Align items vertically in the center */
+    justify-content: flex-start; /* Align items to the left */
+    padding: 10px; /* Padding around the container */
+    width: 30%; /* Full width to the parent element */
+}
+
 
 /* Hover effect for scaling images */
 .menu-item-image:hover, .course-image:hover, .return-arrow-image:hover {
@@ -65,18 +74,19 @@ body {
     width: 80%;
     height: auto;
     display: block;
-    margin: 20px auto 5px;
+    margin: 10px auto 5px;
     background-color: transparent;
     border-radius: 10px;
 }
 
-.menu-item-container {
+/* Common style for menu items */
+.menu-item-container, .course-container {
     text-align: center;
-    margin-bottom: 10px; /* Reduced bottom margin */
+    margin-bottom: 0px; /* Reduced bottom margin */
     display: flex; /* Added to ensure vertical alignment */
     flex-direction: column;
     align-items: center; /* Center align children */
-    padding: 10px 0; /* Add padding at the top and bottom for spacing */
+    padding: 5px 0; /* Add padding at the top and bottom for spacing */
 }
 
 /* Ensure text associated with images is centered and close */
@@ -122,7 +132,7 @@ body {
 }
 
 /* Base style for all buttons */
-.btn, .send-btn, .mic-btn {
+.btn, .send-btn, .mic-btn, .nav-btn {
     background-color: rgba(0, 123, 255, 0.35);
     color: white;
     border: 2px solid transparent;
@@ -134,11 +144,13 @@ body {
     height: 30px;
     width: auto; /* Adjust width as necessary */
     text-align: center;
+    cursor: pointer; /* Makes the button clickable */
     /* text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8) */
 }
 
-.btn i, .send-btn i, .mic-btn i {
+.btn i, .send-btn i, .mic-btn i, .nav-btn i {
     margin: 0; /* Remove any default margin from icons */
+    align-self: center; /*Specifically align the icon */
 }
 
 .btn:focus {
@@ -146,9 +158,9 @@ body {
     border: 2px solid #ffffff;
 }
 
-/* Navigation buttons */
-.btn.nav-btn {
-    margin: 0 2px;
+
+.btn {
+    line-height: 15px; /* This should match your button's height if defined */
 }
 
 .btn:hover, .btn:focus, .send-btn:hover, .send-btn:focus, .mic-btn:hover, .mic-btn:focus {

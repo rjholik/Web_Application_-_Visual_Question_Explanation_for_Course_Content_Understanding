@@ -7,6 +7,7 @@ let automaticTeacherActive = false;
 let audioPlayer = document.getElementById('audioPlayer');
 let isLoggedIn = false; // This should be globally accessible
 let currentAudioSrc = ''; // Variable to keep track of the current audio source
+let cachedCourses = [];  // This will hold the fetched courses data
 
 // Load transcript data
 function loadTranscriptData(courseName) {
@@ -147,20 +148,6 @@ function handleLectureSelection(lectureName) {
     document.getElementById('menu').classList.remove('open'); // Close the menu
 }
 
-function toggleMenu() {
-    const menu = document.getElementById('menu');
-    if (menu.style.left === '0px' || menu.style.left === '0%') {
-        menu.style.left = '-20%'; // Hide the menu
-    } else {
-        menu.style.left = '0'; // Show the menu
-        // Fetch and display the courses if the menu is being opened
-        fetchCourses();
-    }
-}
-
-
-
-// Fetch courses and display them in the menu
 function fetchCourses() {
     if (!isLoggedIn) {
         console.error('User is not logged in.');
@@ -170,7 +157,8 @@ function fetchCourses() {
     fetch('/api/courses')
         .then(response => response.json())
         .then(courses => {
-            console.log('Courses received:', courses); // Make sure courses are received correctly
+            console.log('Courses received:', courses);
+            cachedCourses = courses;  // Cache the courses data here
             displayCourses(courses);
         })
         .catch(error => {
@@ -218,35 +206,6 @@ function displayCourses(courses) {
     menu.style.display = 'block'; // Ensure the menu is visible
 }
 
-// Event listener to populate courses after login
-document.getElementById('loginButton').addEventListener('click', function() {
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-
-    // console.log('Username:', username); // Check what is being captured as username
-    // console.log('Password:', password); // Check what is being captured as password
-
-    if (checkLoginCredentials(username, password)) {
-        isLoggedIn = true;
-        fetchCourses();  // Fetch all courses once logged in
-    } else {
-        console.log("Invalid login credentials.");
-        // Optionally, alert the user or display an error message on the UI
-    }
-});
-
-function checkLoginCredentials(username, password) {
-    // Check if username or password is undefined or null, and handle it appropriately
-    if (!username || !password) {
-        console.error("Username or password is undefined.");
-        return false;  // Return false to indicate invalid input
-    }
-    // This is a placeholder function. You should implement actual authentication logic here.
-    // Check if username and password are not empty as a basic check
-    return username.length > 0 && password.length > 0;
-}
-
-// Fetch and display lectures for a specific course selected by the user
 function fetchLecturesForCourse(courseName) {
     const apiUrl = `/api/lectures/${encodeURIComponent(courseName)}`;
     console.log('Fetching lectures for:', courseName);
@@ -254,7 +213,7 @@ function fetchLecturesForCourse(courseName) {
         .then(response => response.json())
         .then(lectures => {
             console.log('Lectures:', lectures);
-            // Add functionality to display these lectures
+            displayLectures(lectures); // Call displayLectures to update the UI
         })
         .catch(error => {
             console.error('Error fetching lectures:', error);
@@ -265,62 +224,161 @@ function fetchLecturesForCourse(courseName) {
 function displayLectures(lectures) {
     const menu = document.getElementById('menu');
     menu.innerHTML = ''; // Clear the menu to display lectures
+
+    // Create return arrow container
+    const returnArrowContainer = document.createElement('div');
+    returnArrowContainer.className = 'return-arrow-container';
+    returnArrowContainer.addEventListener('click', () => {
+        displayCourses(cachedCourses);  // Assuming you have cached the courses data
+    });
+
+    const returnArrowImg = document.createElement('img');
+    returnArrowImg.src = '/static/images/return_arrow.webp';
+    returnArrowImg.alt = 'Return';
+    returnArrowImg.className = 'return-arrow-image';
+    returnArrowContainer.appendChild(returnArrowImg);
+
+    // Add a title below the return arrow
+    const returnArrowTitle = document.createElement('div');
+    returnArrowTitle.textContent = 'Back to Courses';
+    returnArrowTitle.className = 'return-arrow-title'; // Add CSS class for styling
+    returnArrowContainer.appendChild(returnArrowTitle);
+
+    // returnArrowContainer.appendChild(returnArrowImg);
+    menu.appendChild(returnArrowContainer);
+
+    // Proceed to add lectures
     lectures.forEach(lecture => {
         const lectureDiv = document.createElement('div');
-        lectureDiv.textContent = lecture.name; // Display the lecture name
+        lectureDiv.classList.add('menu-item-container');
+
+        const img = document.createElement('img');
+        img.src = lecture.img;
+        img.alt = lecture.week;
+        img.classList.add('menu-item-image');
+
+        const title = document.createElement('div');
+        title.textContent = lecture.week;
+        title.classList.add('menu-item-title');
+
+        // Add click event to load images from the lecture
+        lectureDiv.addEventListener('click', () => {
+            loadLectureImages(lecture.week, lecture.courseName);
+        });
+
+        lectureDiv.appendChild(img);
+        lectureDiv.appendChild(title);
         menu.appendChild(lectureDiv);
     });
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    const validUsername = "admin"; // Example username
-    const validPassword = "admin"; // Example password
+// function loadLectureImages(courseName, week) {
+//     const apiUrl = `/api/lecture-images/${encodeURIComponent(courseName)}/${encodeURIComponent(week)}`;
+//     console.log('Fetching images for:', courseName, week);
 
-    document.getElementById('loginForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-        let username = document.getElementById('username').value;
-        let password = document.getElementById('password').value;
+//     fetch(apiUrl)
+//         .then(response => {
+//             if (!response.ok) {
+//                 throw new Error('Failed to fetch images');
+//             }
+//             return response.json();
+//         })
+//         .then(images => {
+//             if (images.length > 0) {
+//                 displayLectureImages(images);
+//             } else {
+//                 console.log('No images found for this lecture');
+//             }
+//         })
+//         .catch(error => console.error('Error fetching lecture images:', error));
+// }
 
-        if (username && password) {
-            if (username === validUsername && password === validPassword) {
-                console.log('Logged in successfully');
-                updateLoginStatus(true);
-            } else {
-                alert("Invalid username or password.");
+function loadLectureImages(courseName, week) {
+    console.log('Course Name:', courseName, 'Week:', week); // Debug output to verify parameters
+    const apiUrl = `/api/lecture-images/${encodeURIComponent(courseName)}/${encodeURIComponent(week)}`;
+    
+    fetch(apiUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Failed to fetch images: ${response.statusText}`);
             }
+            return response.json();
+        })
+        .then(images => {
+            console.log('Images:', images); // Debug output to see what images are received
+            if (images.length > 0) {
+                displayLectureImages(images);
+            } else {
+                console.log('No images found for this lecture');
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching lecture images:', error);
+            alert('Error fetching lecture images. Please try again.');
+        });
+}
+
+// document.querySelectorAll('.lecture-item').forEach(item => {
+//     item.addEventListener('click', () => {
+//         const courseName = item.getAttribute('data-course-name');
+//         const week = item.getAttribute('data-week');
+//         loadLectureImages(courseName, week);
+//     });
+// });
+document.querySelectorAll('.lecture-link').forEach(link => {
+    link.addEventListener('click', function() {
+        const courseName = this.dataset.courseName; // Make sure dataset attributes are correctly named
+        const week = this.dataset.week;
+        if (courseName && week) {
+            loadLectureImages(courseName, week);
         } else {
-            alert("Please enter both username and password.");
+            console.error('Course name or week is undefined:', courseName, week);
         }
     });
 });
-// document.addEventListener('DOMContentLoaded', function() {
-//     document.getElementById('loginForm').addEventListener('submit', function(event) {
-//         event.preventDefault();
-//         let username = document.getElementById('username').value;
-//         let password = document.getElementById('password').value;
 
-//         fetch('/login', {
-//             method: 'POST',
-//             headers: {
-//                 'Content-Type': 'application/json'
-//             },
-//             body: JSON.stringify({username: username, password: password})
-//         })
-//         .then(response => response.json())
-//         .then(data => {
-//             if (response.ok) {
-//                 console.log('Logged in successfully');
-//                 updateLoginStatus(true);
-//             } else {
-//                 alert(data.status);
-//             }
-//         })
-//         .catch(error => {
-//             console.error('Error:', error);
-//             alert("An error occurred during login.");
-//         });
+// function displayLectureImages(images) {
+//     const imageContainer = document.getElementById('lectureImageContainer');
+//     const courseContainer = document.getElementById('courseMenu');
+//     imageContainer.innerHTML = ''; // Clear previous images
+
+//     // Hide courses menu
+//     courseContainer.style.display = 'none';
+
+//     // Show lecture images container
+//     imageContainer.style.display = 'block';
+
+//     images.forEach(imageUrl => {
+//         let img = document.createElement('img');
+//         img.src = imageUrl;
+//         img.style.width = '100%'; // Set the size as needed
+//         img.classList.add('lecture-image');
+//         imageContainer.appendChild(img);
 //     });
-// });
+// }
+
+function displayLectureImages(images) {
+    const container = document.getElementById('lectureImageContainer');
+    container.innerHTML = '';  // Clear previous content
+
+    images.forEach(imageUrl => {
+        const imgElement = document.createElement('img');
+        imgElement.src = imageUrl;
+        imgElement.style.width = '100%';  // Adjust styling as needed
+        container.appendChild(imgElement);
+    });
+}
+
+function setupEventListeners() {
+    const lectureItems = document.querySelectorAll('.lecture-item'); // Assuming you have elements with class "lecture-item"
+    lectureItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const courseName = item.getAttribute('data-course-name'); // Ensure you have this attribute in HTML
+            const week = item.getAttribute('data-week'); // And this one too
+            loadLectureImages(courseName, week);
+        });
+    });
+}
 
 // This should be tied to a user action, such as clicking on a course.
 function handleCourseSelection(courseName) {
@@ -705,36 +763,6 @@ function playCurrentAndAdvance() {
     }
 }
 
-function updateLoginStatus(status) {
-    isLoggedIn = status;
-    console.log('Login status updated to:', isLoggedIn);
-    if (isLoggedIn) {
-        showPostLoginUI(); // This will handle showing UI elements
-    }
-}
-
-document.getElementById('loginForm').addEventListener('submit', function(event) {
-    event.preventDefault();
-    let username = document.getElementById('username').value;
-    let password = document.getElementById('password').value;
-
-    // This should be your real credential check (not shown here)
-    if (checkLoginCredentials(username, password)) {
-        updateLoginStatus(true);  // Update login status and show UI elements
-    } else {
-        alert("Please enter both username and password.");
-    }
-});
-
-function showPostLoginUI() {
-    // Hide the login section
-    document.getElementById('loginSection').style.display = 'none';
-
-    // Show all elements with the 'post-login' class
-    document.querySelectorAll('.post-login').forEach(element => {
-        element.style.display = 'block'; // Adjust as needed for different types of elements
-    });
-}
 
 // Assuming some dynamic part comes from a function or condition
 // Function to get API URL using course name
@@ -747,11 +775,18 @@ function getApiUrl(courseName) {
     return `http://127.0.0.1:5000/api/lectures/${encodedCourseName}`;
 }
 
-// Assume this is only called under appropriate conditions, such as after login
-document.getElementById('lessonsButton').addEventListener('click', () => {
+document.getElementById('lessonsButton').addEventListener('click', function() {
     const menu = document.getElementById('menu');
-    menu.style.left = menu.style.left === '0%' ? '-100%' : '0%'; // Adjust based on your actual setup
+    if (menu.style.left === '0%' || menu.style.left === '0px') {
+        menu.style.left = '-20%'; // Hide the menu
+        console.log('Menu closed');
+    } else {
+        menu.style.left = '0'; // Show the menu
+        console.log('Menu opened');
+        fetchCourses(); // Fetch and display courses if the menu is being opened
+    }
 });
+
 
 document.querySelectorAll('.course-container').forEach(container => {
     container.addEventListener('click', () => {
@@ -770,11 +805,105 @@ document.querySelectorAll('.course-container').forEach(container => {
 });
 
 document.getElementById('chatButton').addEventListener('click', function() {
+    console.log('Chat button clicked');
     const chatWindow = document.getElementById('chatWindow');
-    if (chatWindow.classList.contains('open')) {
-        chatWindow.classList.remove('open');
-    } else {
-        chatWindow.classList.add('open');
-    }
+    chatWindow.classList.toggle('open');
+    console.log('Chat window visibility toggled, classList:', chatWindow.classList);
 });
 
+
+// Function to update login status
+function updateLoginStatus(status) {
+    isLoggedIn = status;
+    console.log('Login status updated to:', isLoggedIn);
+    if (isLoggedIn) {
+        showPostLoginUI();  // This will handle showing UI elements such as courses
+    }
+}
+
+// Ensure the login function updates isLoggedIn
+function handleLoginSuccess(data) {
+    console.log('Logged in:', data);
+    updateLoginStatus(true);
+}
+
+// Event listener for login form submission
+document.getElementById('loginForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+
+    fetch('http://127.0.0.1:5000/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, password })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Failed to log in: ${response.status} ${response.statusText}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.status === 'Logged in successfully') {
+            handleLoginSuccess(data);
+        } else {
+            alert('Login failed: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Login error:', error);
+        alert('Login error: ' + error.message);
+    });
+});
+
+// Display courses in the UI
+function displayCourses(courses) {
+    const menu = document.getElementById('menu');
+    menu.innerHTML = ''; // Clear any existing content
+
+    if (courses.length === 0) {
+        menu.innerHTML = '<p>No courses available.</p>';
+        return;
+    }
+
+    const fragment = document.createDocumentFragment(); // Use DocumentFragment to minimize reflows
+
+    courses.forEach(course => {
+        const courseDiv = document.createElement('div');
+        courseDiv.className = 'course-container';
+
+        const img = document.createElement('img');
+        img.src = course.image; // Use the image URL from the course object
+        img.alt = `Image for ${course.name}`;
+        img.className = 'course-image';
+
+        const label = document.createElement('div');
+        label.textContent = course.name; // Assuming 'name' is the property that contains the course name
+        label.className = 'course-label';
+
+        courseDiv.appendChild(img);
+        courseDiv.appendChild(label);
+
+        courseDiv.addEventListener('click', () => {
+            console.log('Course selected:', course.name);
+            fetchLecturesForCourse(course.name); // Fetch and display lectures for the selected course
+        });
+
+        fragment.appendChild(courseDiv);
+    });
+
+    menu.appendChild(fragment);
+    menu.style.display = 'block'; // Ensure the menu is visible
+}
+
+// Initial UI setup function, hiding elements until login
+function showPostLoginUI() {
+    document.getElementById('loginSection').style.display = 'none';
+    document.querySelector('.nav-buttons').style.display = 'block';
+    document.querySelectorAll('.position-absolute').forEach(element => {
+        element.style.display = 'block';
+    });
+}

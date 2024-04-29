@@ -16,10 +16,16 @@ from datasets import load_dataset
 import soundfile as sf
 import torch
 import sounddevice as sd
-from flask import Flask, abort, session
+from flask import abort, session
+from werkzeug.utils import secure_filename
 
 from werkzeug.security import check_password_hash
 from flask_cors import CORS  # Import CORS
+
+# from flask_bcrypt import Bcrypt
+
+import sqlite3
+
 
 import json
 
@@ -33,10 +39,20 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # 0 = all messages are logged (default
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+def get_script_path():
+    try:
+        # This tries to get the full path of the current script
+        full_path = os.path.realpath(__file__)
+        return os.path.dirname(full_path)
+    except NameError:
+        # If __file__ is not defined, fallback to the current working directory
+        return os.getcwd()
+
 # Path to Current Working Directory
-dir_path = os.path.dirname(os.path.realpath(__file__))
-
-
+dir_path = get_script_path()
+db_path = os.path.join(dir_path, 'users.db')
+print(f"CWD: {dir_path}")
+print(f"Database path: {db_path}")
 
 synthesiser = pipeline("text-to-speech", "microsoft/speecht5_tts", device=0 if torch.cuda.is_available() else -1)
 
@@ -48,8 +64,10 @@ stt_model = whisper.load_model("base")
 
 
 def get_db_connection():
-    conn = sqlite3.connect('users.db')
+    # db_path = 'users.db'  # Ensure this is the correct and consistent path
+    conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
+    print(f"Connecting to the database")  # This line will confirm the DB path
     return conn
 
 def does_table_exist(cursor, table_name):
@@ -59,6 +77,7 @@ def does_table_exist(cursor, table_name):
 
 def setup_database():
     try:
+        
         conn = get_db_connection()
         cursor = conn.cursor()
 
@@ -76,6 +95,7 @@ def setup_database():
         print(f"An error occurred: {e}")
     finally:
         conn.close()
+        print("Connection closed")
 
 # Call the function to ensure the setup is processed
 setup_database()
@@ -121,6 +141,8 @@ model = VQAModel()
 
 app = Flask(__name__, static_folder='static')
 app.logger.setLevel(logging.INFO)  # Set the logger level directly
+
+# bcrypt = Bcrypt(app)  # Initialize the bcrypt extension
 
 CORS(app)  # Initialize CORS on your app, this is crucial for cross-origin requests if needed
 
@@ -245,29 +267,78 @@ def get_courses():
                 'image': image_url
             })
     return jsonify(courses)
-    
+
+@app.route('/materials/<path:filename>')
+def get_material(filename):
+    # Secure the filename to prevent directory traversal
+    filename = secure_filename(filename)
+    filepath = os.path.join(app.static_folder, filename)
+    if os.path.exists(filepath):
+        return send_from_directory(os.path.dirname(filepath), os.path.basename(filepath))
+    abort(404, "Resource not found")
+
 @app.route('/api/lectures/<course_name>')
-def get_lectures_for_course(course_name):
-    base_path = os.path.join(app.static_folder, "courses", course_name)
+def lectures_for_course(course_name):
+    base_path = os.path.join(app.static_folder, "courses", course_name, "lectures")
+    if not os.path.exists(base_path) or not os.path.isdir(base_path):
+        return jsonify([])  # If no directory, return empty list
+
+    lectures = []
     try:
-        lectures = []
-        # Ensure the course directory exists and is a directory
-        if os.path.exists(base_path) and os.path.isdir(base_path):
-            for week_dir in sorted(os.listdir(base_path)):
-                week_path = os.path.join(base_path, week_dir)
-                if os.path.isdir(week_path):
-                    images = sorted(os.listdir(week_path))
-                    if images:
-                        # Assuming the first image is the representative image for the lecture
-                        first_image = images[0]
-                        lectures.append({
-                            'week': week_dir,
-                            'img': f'/static/courses/{course_name}/{week_dir}/{first_image}'
-                        })
+        # List all directories within the course lectures path
+        for week_dir in sorted(os.listdir(base_path)):
+            week_path = os.path.join(base_path, week_dir)
+            if os.path.isdir(week_path):
+                images = sorted(os.listdir(week_path))
+                if images:
+                    first_image = images[0]
+                    lectures.append({
+                        'week': week_dir,
+                        'img': url_for('static', filename=f'courses/{course_name}/lectures/{week_dir}/{first_image}')
+                    })
         return jsonify(lectures)
     except Exception as e:
-        app.logger.error("Failed to fetch lectures:", exc_info=True)
-        return jsonify({"error": str(e)}), 500
+        app.logger.error(f"Failed to fetch lectures: {str(e)}")
+        return jsonify({'error': 'Server error'}), 500
+    
+# @app.route('/api/lecture-images/<course_name>/<week>')
+# def get_lecture_images(course_name, week):
+#     base_path = os.path.join(app.static_folder, "courses", course_name, "lectures", week)
+#     try:
+#         images = [f"/static/courses/{course_name}/lectures/{week}/{file}" for file in os.listdir(base_path) if file.endswith(('.png', '.jpg', '.jpeg', '.webp'))]
+#         return jsonify(images)
+#     except Exception as e:
+#         app.logger.error("Failed to fetch lecture images:", exc_info=True)
+#         return jsonify({"error": str(e)}), 500
+
+# @app.route('/api/lecture-images/<courseName>/<week>')
+# def get_lecture_images(courseName, week):
+#     images_directory = os.path.join(app.static_folder, "courses", courseName, "lectures", week)
+#     try:
+#         images = [f for f in os.listdir(images_directory) if f.endswith(('.png', '.jpg', '.jpeg', '.webp'))]
+#         images = [url_for('static', filename=os.path.join("courses", courseName, "lectures", week, image)) for image in images]
+#         return jsonify(images)
+#     except Exception as e:
+#         print(e)
+#         abort(500, description="Error fetching images")
+
+@app.route('/api/lecture-images/<course_name>/<week>')
+def lecture_images(course_name, week):
+    lecture_path = os.path.join(app.static_folder, "courses", course_name, "lectures", week)
+    if not os.path.exists(lecture_path) or not os.path.isdir(lecture_path):
+        return jsonify([])  # Return an empty list if the directory doesn't exist
+
+    images = []
+    try:
+        for img_file in sorted(os.listdir(lecture_path)):
+            if img_file.lower().endswith(('.png', '.jpg', '.jpeg', '.webp')):  # Filter image files
+                img_url = url_for('static', filename=f'courses/{course_name}/lectures/{week}/{img_file}')
+                images.append(img_url)
+
+        return jsonify(images)
+    except Exception as e:
+        app.logger.error(f"Failed to load images for {course_name}/{week}: {str(e)}")
+        return jsonify({'error': 'Server error'}), 500
     
 @app.route('/api/vqa', methods=['POST'])
 def handle_vqa():
@@ -366,32 +437,60 @@ def delete_user(user_id):
 #         })
 #     else:
 #         return jsonify({'status': 'Login failed'}), 401
-
+    
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
+    print("Received data:", data)  # Debugging line to check what is received
+
     if not data or 'username' not in data or 'password' not in data:
-        abort(400, "Please provide both username and password")
+        return jsonify({'status': 'Error', 'message': 'Missing username or password'}), 400
 
     username = data['username']
     password = data['password']
-
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
+
+    # Query to fetch the user details
+    cursor.execute("SELECT * FROM users WHERE username = ? AND password = ?", (username, password))
     user = cursor.fetchone()
     conn.close()
 
-    if user and check_password_hash(user['password'], password):
-        session['logged_in'] = True
-        session['username'] = user['username']
-        session['user_type'] = user['user_type']
+    if user:
+        # If user exists, handle login success
         return jsonify({
             'status': 'Logged in successfully',
             'user_type': user['user_type']
         })
     else:
+        # If no user found, handle login failure
         return jsonify({'status': 'Login failed'}), 401
+
+# @app.route('/login', methods=['POST'])
+# def login():
+#     data = request.get_json()
+#     if not data or 'username' not in data or 'password' not in data:
+#         abort(400, "Please provide both username and password")
+
+#     username = data['username']
+#     password = data['password']
+
+#     conn = get_db_connection()
+#     cursor = conn.cursor()
+#     cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
+#     user = cursor.fetchone()
+#     conn.close()
+
+#     if user and check_password_hash(user['password'], password):
+#         session['logged_in'] = True
+#         session['username'] = user['username']
+#         session['user_type'] = user['user_type']
+#         return jsonify({
+#             'status': 'Logged in successfully',
+#             'user_type': user['user_type']
+#         })
+#     else:
+#         return jsonify({'status': 'Login failed'}), 401
 
 @app.route('/logout', methods=['GET'])
 def logout():

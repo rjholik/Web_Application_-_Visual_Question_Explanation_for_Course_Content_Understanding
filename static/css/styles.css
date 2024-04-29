@@ -40,57 +40,52 @@ body {
     color: white;
 }
 
-
-
 .menu.open {
     left: 0;
     display: block;
 }
 
-/* .course-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 10px;
-    padding: 5px;
-    background-color: rgba(255, 255, 255, 0.2); /* Light white background for each item */
-    /* border-radius: 5px; */
-/* } */
-
-.course-image {
-    width: 100px; /* Set the width to a smaller size */
+/* Common styles for images that should scale on hover */
+.menu-item-image, .course-image, .return-arrow-image {
+    width: 100px; /* Adjust the size as needed */
     height: auto; /* Maintain aspect ratio */
-    border-radius: 5px; /* Rounded corners for images */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Optional: Adds shadow for depth */
+    border-radius: 5px; /* Rounded corners for aesthetics */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Shadow for depth */
+    transition: transform 0.3s ease; /* Smooth scaling transition */
+    display: block; /* Ensure proper handling of margin and centering */
+    margin: 0 auto 0px; /* Center the image and add consistent space below */
 }
 
-.course-label {
-    margin-top: 5px;
-    text-align: center;
-    font-size: 14px;
-    color: white;/*#333; /* Darker text for better readability */
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8); /* Adds dark shadow for contrast */
+/* Hover effect for scaling images */
+.menu-item-image:hover, .course-image:hover, .return-arrow-image:hover {
+    transform: scale(1.1); /* Scale up the image slightly */
 }
 
 #menu img {
     width: 80%;
     height: auto;
     display: block;
-    margin: 10px auto 5px;
+    margin: 20px auto 5px;
     background-color: transparent;
     border-radius: 10px;
 }
 
 .menu-item-container {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 10px; /* Reduced bottom margin */
+    display: flex; /* Added to ensure vertical alignment */
+    flex-direction: column;
+    align-items: center; /* Center align children */
+    padding: 10px 0; /* Add padding at the top and bottom for spacing */
 }
 
-.menu-item-title {
-    font-size: 14px;
-    /* color: white; */
-    color: #333; /* Dark gray color for the text */
-    margin-top: 2px;
+/* Ensure text associated with images is centered and close */
+.menu-item-title, .course-label, .return-arrow-title {
+    text-align: center; /* Center text below images */
+    font-size: 14px; /* Adjust font size as necessary */
+    color: white; /* Color for visibility */
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.75); /* Text shadow for readability */
+    margin-top: 0px; /* Consistent space between image and text */
 }
 
 .rounded-image {
@@ -109,6 +104,12 @@ body {
     position: fixed;
     right: 20px;
     bottom: 20px;
+}
+
+.lecture-image {
+    max-width: 100%;  /* Ensures images are not bigger than their container */
+    height: auto;     /* Maintains aspect ratio */
+    margin-bottom: 10px;  /* Adds space between images */
 }
 
 #lectureImage {
@@ -136,7 +137,6 @@ body {
     /* text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8) */
 }
 
-
 .btn i, .send-btn i, .mic-btn i {
     margin: 0; /* Remove any default margin from icons */
 }
@@ -151,34 +151,14 @@ body {
     margin: 0 2px;
 }
 
-/* .btn.nav-btn.right {
-    margin-left: 2px;
-} */
-
 .btn:hover, .btn:focus, .send-btn:hover, .send-btn:focus, .mic-btn:hover, .mic-btn:focus {
     color: white;
     background-color: rgba(0, 123, 255, 0.45); /* Slightly darker on hover/focus */
 }
 
-/* .chat-window {
-    position: fixed;
-    right: -35%;
-    width: 35%;
-    height: 80%;
-    /* background-color: rgba(0, 123, 255, 0.2); */
-    /*background-color: rgba(0, 123, 255, 0.45);
-    transition: right 0.5s;
-    overflow-y: auto;
-    border-radius: 10px;
-    z-index: 1000;
-    color: white;
-    display: flex;
-    flex-direction: column; /* Makes child elements stack vertically */
-/*} */
-
 .chat-window {
     position: fixed;
-    right: -35%;
+    right: -35%; /* Start off-screen */
     width: 35%;
     height: 80%;
     background-color: rgba(0, 123, 255, 0.45);
@@ -186,13 +166,14 @@ body {
     border-radius: 10px;
     z-index: 1000;
     color: white;
-    display: flex;
-    flex-direction: column; /* Organize children vertically */
-    overflow: hidden; /* Prevent the chat window from being scrollable */
+    display: none; /* Start as hidden */
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .chat-window.open {
-    right: 0;
+    right: 0;  /* Brings into view */
+    display: flex; /* Ensure it is displayed when open */
 }
 
 .input-area {
@@ -268,15 +249,6 @@ body {
     border-bottom-left-radius: 0; /* Make one corner squared */
 }
 
-/* .chat-area {
-    display: flex;
-    flex-grow: 1; /* Allows chat area to take up remaining space */
-    /*flex-direction: column-reverse; /* Stack messages from the bottom up */
-    /* align-items: flex-start; Align items to the start of the cross axis */
-    /* justify-content: flex-end; Start filling from the bottom */
-    /*overflow-y: auto;
-    height: 100%;
-} */
 
 .chat-area {
     flex-grow: 1; /* Take up all available space */

@@ -272,27 +272,6 @@ function displayLectures(lectures) {
     });
 }
 
-// function loadLectureImages(courseName, week) {
-//     const apiUrl = `/api/lecture-images/${encodeURIComponent(courseName)}/${encodeURIComponent(week)}`;
-//     console.log('Fetching images for:', courseName, week);
-
-//     fetch(apiUrl)
-//         .then(response => {
-//             if (!response.ok) {
-//                 throw new Error('Failed to fetch images');
-//             }
-//             return response.json();
-//         })
-//         .then(images => {
-//             if (images.length > 0) {
-//                 displayLectureImages(images);
-//             } else {
-//                 console.log('No images found for this lecture');
-//             }
-//         })
-//         .catch(error => console.error('Error fetching lecture images:', error));
-// }
-
 function loadLectureImages(courseName, week) {
     console.log('Course Name:', courseName, 'Week:', week); // Debug output to verify parameters
     const apiUrl = `/api/lecture-images/${encodeURIComponent(courseName)}/${encodeURIComponent(week)}`;
@@ -318,13 +297,6 @@ function loadLectureImages(courseName, week) {
         });
 }
 
-// document.querySelectorAll('.lecture-item').forEach(item => {
-//     item.addEventListener('click', () => {
-//         const courseName = item.getAttribute('data-course-name');
-//         const week = item.getAttribute('data-week');
-//         loadLectureImages(courseName, week);
-//     });
-// });
 document.querySelectorAll('.lecture-link').forEach(link => {
     link.addEventListener('click', function() {
         const courseName = this.dataset.courseName; // Make sure dataset attributes are correctly named
@@ -336,26 +308,6 @@ document.querySelectorAll('.lecture-link').forEach(link => {
         }
     });
 });
-
-// function displayLectureImages(images) {
-//     const imageContainer = document.getElementById('lectureImageContainer');
-//     const courseContainer = document.getElementById('courseMenu');
-//     imageContainer.innerHTML = ''; // Clear previous images
-
-//     // Hide courses menu
-//     courseContainer.style.display = 'none';
-
-//     // Show lecture images container
-//     imageContainer.style.display = 'block';
-
-//     images.forEach(imageUrl => {
-//         let img = document.createElement('img');
-//         img.src = imageUrl;
-//         img.style.width = '100%'; // Set the size as needed
-//         img.classList.add('lecture-image');
-//         imageContainer.appendChild(img);
-//     });
-// }
 
 function displayLectureImages(images) {
     const container = document.getElementById('lectureImageContainer');
@@ -787,7 +739,6 @@ document.getElementById('lessonsButton').addEventListener('click', function() {
     }
 });
 
-
 document.querySelectorAll('.course-container').forEach(container => {
     container.addEventListener('click', () => {
         const courseName = container.querySelector('.course-label').textContent; // Assuming the course name is stored in the textContent of a label
@@ -822,10 +773,50 @@ function updateLoginStatus(status) {
 }
 
 // Ensure the login function updates isLoggedIn
+// function handleLoginSuccess(data) {
+//     console.log('Logged in:', data);
+//     updateLoginStatus(true);
+// }
+
 function handleLoginSuccess(data) {
     console.log('Logged in:', data);
     updateLoginStatus(true);
+    
+    // Display the admin button for all logged-in users
+    document.getElementById('adminButton').style.display = 'inline-block'; // Show the admin button
 }
+
+// Event listener for login form submission
+// document.getElementById('loginForm').addEventListener('submit', function(event) {
+//     event.preventDefault();
+//     const username = document.getElementById('username').value;
+//     const password = document.getElementById('password').value;
+
+//     fetch('http://127.0.0.1:5000/login', {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json'
+//         },
+//         body: JSON.stringify({ username, password })
+//     })
+//     .then(response => {
+//         if (!response.ok) {
+//             throw new Error(`Failed to log in: ${response.status} ${response.statusText}`);
+//         }
+//         return response.json();
+//     })
+//     .then(data => {
+//         if (data.status === 'Logged in successfully') {
+//             handleLoginSuccess(data);
+//         } else {
+//             alert('Login failed: ' + data.message);
+//         }
+//     })
+//     .catch(error => {
+//         console.error('Login error:', error);
+//         alert('Login error: ' + error.message);
+//     });
+// });
 
 // Event listener for login form submission
 document.getElementById('loginForm').addEventListener('submit', function(event) {
@@ -907,3 +898,8 @@ function showPostLoginUI() {
         element.style.display = 'block';
     });
 }
+
+document.getElementById('adminButton').addEventListener('click', function() {
+    window.open('/user_administration', '_blank'); // Opens in a new tab
+});
+

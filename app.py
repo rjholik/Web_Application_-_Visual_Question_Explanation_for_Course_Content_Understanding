@@ -300,45 +300,38 @@ def lectures_for_course(course_name):
     except Exception as e:
         app.logger.error(f"Failed to fetch lectures: {str(e)}")
         return jsonify({'error': 'Server error'}), 500
-    
-# @app.route('/api/lecture-images/<course_name>/<week>')
-# def get_lecture_images(course_name, week):
-#     base_path = os.path.join(app.static_folder, "courses", course_name, "lectures", week)
-#     try:
-#         images = [f"/static/courses/{course_name}/lectures/{week}/{file}" for file in os.listdir(base_path) if file.endswith(('.png', '.jpg', '.jpeg', '.webp'))]
-#         return jsonify(images)
-#     except Exception as e:
-#         app.logger.error("Failed to fetch lecture images:", exc_info=True)
-#         return jsonify({"error": str(e)}), 500
 
-# @app.route('/api/lecture-images/<courseName>/<week>')
-# def get_lecture_images(courseName, week):
-#     images_directory = os.path.join(app.static_folder, "courses", courseName, "lectures", week)
-#     try:
-#         images = [f for f in os.listdir(images_directory) if f.endswith(('.png', '.jpg', '.jpeg', '.webp'))]
-#         images = [url_for('static', filename=os.path.join("courses", courseName, "lectures", week, image)) for image in images]
-#         return jsonify(images)
-#     except Exception as e:
-#         print(e)
-#         abort(500, description="Error fetching images")
-
+# @app.route('/api/lecture-images/<course_name>/lectures/<week>')
 @app.route('/api/lecture-images/<course_name>/<week>')
 def lecture_images(course_name, week):
+    app.logger.info("Fetching lecture image paths...")
+
+    # Building the path to the directory containing lecture images
     lecture_path = os.path.join(app.static_folder, "courses", course_name, "lectures", week)
+    app.logger.info("course_name: %s", course_name)
+    app.logger.info("week: %s", week)
+    app.logger.info("lecture_path: %s", lecture_path)
+    
     if not os.path.exists(lecture_path) or not os.path.isdir(lecture_path):
+        app.logger.error(f"No directory found for {lecture_path}")
         return jsonify([])  # Return an empty list if the directory doesn't exist
 
-    images = []
+    # images = []
+    image_paths = []  # Initialize an empty list to store image paths
     try:
+        # List all image files in the directory
         for img_file in sorted(os.listdir(lecture_path)):
-            if img_file.lower().endswith(('.png', '.jpg', '.jpeg', '.webp')):  # Filter image files
-                img_url = url_for('static', filename=f'courses/{course_name}/lectures/{week}/{img_file}')
-                images.append(img_url)
+            if img_file.lower().endswith(('.png', '.jpg', '.jpeg', '.webp')):  # Filter for image files
+                # img_url = url_for('static', filename=f'courses/{course_name}/lectures/{week}/{img_file}')
+                # image_paths.append(img_url)
+                image_paths.append(f'/static/courses/{course_name}/lectures/{week}/{img_file}')
 
-        return jsonify(images)
+        # app.logger.info("Image paths: %s", image_paths)
+        return jsonify(image_paths)
     except Exception as e:
         app.logger.error(f"Failed to load images for {course_name}/{week}: {str(e)}")
         return jsonify({'error': 'Server error'}), 500
+
     
 @app.route('/api/vqa', methods=['POST'])
 def handle_vqa():
@@ -373,7 +366,6 @@ def transcribe_audio():
     os.remove(audio_path)  # Clean up the temporary file
     return jsonify({"tra nscription": transcription})
 
-
 #create user
 @app.route('/user', methods=['POST'])
 def create_user():
@@ -407,36 +399,6 @@ def delete_user(user_id):
     conn.commit()
     conn.close()
     return jsonify({'status': 'User deleted successfully'})
-
-#login
-# @app.route('/login', methods=['POST'])
-# def login():
-#     data = request.get_json()
-    
-#     if not data or 'username' not in data or 'password' not in data:
-#         abort(400, description="Please provide both username and password")
-
-#     username = data['username']
-#     password = data['password']
-
-#     conn = get_db_connection()
-#     cursor = conn.cursor()
-
-#     # Query to fetch the user details
-#     cursor.execute("SELECT * FROM users WHERE username = ? AND password = ?", (username, password))
-#     user = cursor.fetchone()
-#     conn.close()
-
-#     if user:
-#         session['logged_in'] = True
-#         session['username'] = user['username']
-#         session['user_type'] = user['user_type']  # Store user type in session
-#         return jsonify({
-#             'status': 'Logged in successfully',
-#             'user_type': user['user_type']  # Return user type in response
-#         })
-#     else:
-#         return jsonify({'status': 'Login failed'}), 401
     
 @app.route('/login', methods=['POST'])
 def login():
@@ -465,32 +427,6 @@ def login():
     else:
         # If no user found, handle login failure
         return jsonify({'status': 'Login failed'}), 401
-
-# @app.route('/login', methods=['POST'])
-# def login():
-#     data = request.get_json()
-#     if not data or 'username' not in data or 'password' not in data:
-#         abort(400, "Please provide both username and password")
-
-#     username = data['username']
-#     password = data['password']
-
-#     conn = get_db_connection()
-#     cursor = conn.cursor()
-#     cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
-#     user = cursor.fetchone()
-#     conn.close()
-
-#     if user and check_password_hash(user['password'], password):
-#         session['logged_in'] = True
-#         session['username'] = user['username']
-#         session['user_type'] = user['user_type']
-#         return jsonify({
-#             'status': 'Logged in successfully',
-#             'user_type': user['user_type']
-#         })
-#     else:
-#         return jsonify({'status': 'Login failed'}), 401
 
 @app.route('/logout', methods=['GET'])
 def logout():

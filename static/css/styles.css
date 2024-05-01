@@ -138,6 +138,7 @@ body {
     border: 2px solid transparent;
     padding: 0 10px; /* Horizontal padding only */
     font-size: 14px;
+    font-weight: bold; /* Make the text bold */
     display: inline-flex; /* Using inline-flex */
     align-items: center; /* Align items vertically */
     justify-content: center; /* Center content horizontally */
@@ -163,9 +164,9 @@ body {
     line-height: 15px; /* This should match your button's height if defined */
 }
 
-.btn:hover, .btn:focus, .send-btn:hover, .send-btn:focus, .mic-btn:hover, .mic-btn:focus {
-    color: white;
-    background-color: rgba(0, 123, 255, 0.45); /* Slightly darker on hover/focus */
+.btn:hover, .send-btn:hover, .mic-btn:hover, .nav-btn:hover,
+.btn:hover i, .send-btn:hover i, .mic-btn:hover i, .nav-btn:hover i { /* Target the icons inside buttons as well */
+    color: black !important; /* Changes text and icon color to black on hover */
 }
 
 .chat-window {
@@ -342,6 +343,29 @@ body {
 
 .post-login {
     display: none; /* Initially hide these elements */
+}
+
+#loginButton {
+    background-color: rgba(0, 123, 255, 0.35); /* Light blue background */
+    border: 2px solid transparent; /* No visible border */
+    font-size: 14px;
+    font-weight: bold; /* Make the text bold */
+    padding: 10px 20px; /* Padding inside the button */
+    color: white; /* Default text color */
+    transition: color 0.3s ease, background-color 0.3s ease; /* Smooth transition for color and background */
+}
+
+#loginButton:hover {
+    color: black; /* Black text on hover */
+    /* background-color: rgba(255, 255, 255, 0.8); Lighter background on hover */
+}
+
+#loginButton {
+    transition: color 0.3s ease; /* Smooth transition for color change */
+}
+
+#loginButton:hover {
+    color: black; /* Color change on hover */
 }
 
 .btn.nav-btn {

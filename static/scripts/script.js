@@ -1,5 +1,5 @@
-let currentWeekImages = [];
-let currentIndex = 0;
+let currentWeekImages = []; // Array to store image URLs
+let currentIndex = 0; // Index of the currently displayed image
 let lectures = [];  // Will hold the fetched lecture data.
 let isInLectureMode = false;
 let transcriptData = []; // Global variable to store transcript data
@@ -9,10 +9,11 @@ let isLoggedIn = false; // This should be globally accessible
 let currentAudioSrc = ''; // Variable to keep track of the current audio source
 let cachedCourses = [];  // This will hold the fetched courses data
 
-// Load transcript data
 function loadTranscriptData(courseName) {
-    const transcriptUrl = `/static/courses/${encodeURIComponent(courseName)}/transcript.json`;
 
+    const transcriptUrl = `/static/courses/${courseName}/transcript.json`;
+    // console.log("Attempting to load transcript data from:", transcriptUrl); // Debugging: log the URL being accessed
+    
     fetch(transcriptUrl)
         .then(response => {
             if (!response.ok) {
@@ -25,8 +26,8 @@ function loadTranscriptData(courseName) {
             transcriptData = data; // Store the data in the global variable
         })
         .catch(error => {
-            console.error('Error loading JSON data:', error);
-            transcriptData = null; // Reset or handle the absence of data appropriately
+            console.error('Error loading transcript data:', error);
+            transcriptData = []; // Reset or handle the absence of data appropriately
         });
 }
 
@@ -69,13 +70,25 @@ document.getElementById('autoTeacherButton').addEventListener('click', () => {
     }
 });
 
-
-// Display a lecture image and update lecture mode
+// Function to display a lecture image
 function showLectureImage(imageSrc) {
-    document.getElementById('lectureImage').src = imageSrc;
-    document.getElementById('lectureImage').style.display = 'block';
-    document.getElementById('defaultText').style.display = 'none';
-    isInLectureMode = true;
+    const lectureImage = document.getElementById('lectureImage');
+    const menu = document.getElementById('menu'); // Get the menu element
+
+    if (lectureImage) {
+        lectureImage.src = imageSrc;
+        lectureImage.style.display = 'block';  // Make sure the image is visible
+        isInLectureMode = true; // Now in lecture mode
+
+        // Close the menu when an image is shown
+        if (menu.style.left === '0%' || menu.style.left === '0px') {
+            menu.style.left = '-20%'; // Hide the menu
+            console.log('Menu closed after selecting an image.');
+        }
+        
+    } else {
+        console.error('lectureImage element not found');
+    }
 }
 
 // Function to fetch all images for a week
@@ -137,17 +150,6 @@ function populateMenu() {
     menu.appendChild(fragment);
 }
 
-function handleLectureSelection(lectureName) {
-    const audioPlayer = document.getElementById('audioPlayer');
-    if (!audioPlayer.paused) {
-        audioPlayer.pause();
-        audioPlayer.currentTime = 0;  // Reset the audio
-    }
-    // Replace spaces and handle URL encoding in lecture names
-    fetchImagesForWeek(encodeURIComponent(lectureName.replace(/\s+/g, '_')));
-    document.getElementById('menu').classList.remove('open'); // Close the menu
-}
-
 function fetchCourses() {
     if (!isLoggedIn) {
         console.error('User is not logged in.');
@@ -157,7 +159,7 @@ function fetchCourses() {
     fetch('/api/courses')
         .then(response => response.json())
         .then(courses => {
-            console.log('Courses received:', courses);
+            // console.log('Courses received:', courses);
             cachedCourses = courses;  // Cache the courses data here
             displayCourses(courses);
         })
@@ -209,11 +211,13 @@ function displayCourses(courses) {
 function fetchLecturesForCourse(courseName) {
     const apiUrl = `/api/lectures/${encodeURIComponent(courseName)}`;
     console.log('Fetching lectures for:', courseName);
+
     fetch(apiUrl)
         .then(response => response.json())
         .then(lectures => {
-            console.log('Lectures:', lectures);
-            displayLectures(lectures); // Call displayLectures to update the UI
+            // console.log('Lectures:', lectures);
+            displayLectures(lectures, courseName); // Call displayLectures to update the UI
+            loadTranscriptData(courseName); // Load transcript data as lectures are being displayed
         })
         .catch(error => {
             console.error('Error fetching lectures:', error);
@@ -221,7 +225,7 @@ function fetchLecturesForCourse(courseName) {
         });
 }
 
-function displayLectures(lectures) {
+function displayLectures(lectures, courseName) {
     const menu = document.getElementById('menu');
     menu.innerHTML = ''; // Clear the menu to display lectures
 
@@ -256,7 +260,8 @@ function displayLectures(lectures) {
 
         // Add click event to load images from the lecture
         lectureDiv.addEventListener('click', () => {
-            loadLectureImages(lecture.week, lecture.courseName);
+            // Ensure courseName is passed along with the week
+            loadLectureImages(courseName, lecture.week);
         });
 
         lectureDiv.appendChild(img);
@@ -265,29 +270,54 @@ function displayLectures(lectures) {
     });
 }
 
+// Function to fetch and display lecture images
 function loadLectureImages(courseName, week) {
-    console.log('Course Name:', courseName, 'Week:', week); // Debug output to verify parameters
-    const apiUrl = `/api/lecture-images/${encodeURIComponent(courseName)}/${encodeURIComponent(week)}`;
-    
-    fetch(apiUrl)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Failed to fetch images: ${response.statusText}`);
-            }
-            return response.json();
-        })
+    const lectureImage = document.getElementById('lectureImage');
+    const defaultText = document.getElementById('defaultText');
+
+    fetch(`/api/lecture-images/${encodeURIComponent(courseName)}/${encodeURIComponent(week)}`)
+        .then(response => response.json())
         .then(images => {
-            console.log('Images:', images); // Debug output to see what images are received
             if (images.length > 0) {
-                displayLectureImages(images);
+                currentWeekImages = images; // Store all image URLs in the global array
+                currentIndex = 0; // Start with the first image
+                showLectureImage(currentWeekImages[currentIndex]); // Display the first image
+                defaultText.style.display = 'none'; // Hide default text
             } else {
-                console.log('No images found for this lecture');
+                lectureImage.style.display = 'none'; // Hide the image if no images are found
+                defaultText.style.display = 'block'; // Show default text
+                defaultText.textContent = 'No images found for this lecture';
             }
         })
         .catch(error => {
-            console.error('Error fetching lecture images:', error);
-            alert('Error fetching lecture images. Please try again.');
+            console.error('Error loading lecture images:', error);
+            defaultText.style.display = 'block'; // Show default text in case of an error
+            defaultText.textContent = 'Failed to load images.';
         });
+    // loadLectureImages(courseName, week);    
+}
+
+function setupNavigationButtons() {
+    const nextButton = document.getElementById('nextButton');
+    const prevButton = document.getElementById('prevButton');
+    
+    if (nextButton) {
+        nextButton.onclick = () => {
+            if (currentIndex < currentWeekImages.length - 1) {
+                currentIndex++;
+                showLectureImage(currentWeekImages[currentIndex]);
+            }
+        };
+    }
+
+    if (prevButton) {
+        prevButton.onclick = () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+                showLectureImage(currentWeekImages[currentIndex]);
+            }
+        };
+    }
 }
 
 document.querySelectorAll('.lecture-link').forEach(link => {
@@ -295,7 +325,9 @@ document.querySelectorAll('.lecture-link').forEach(link => {
         const courseName = this.dataset.courseName; // Make sure dataset attributes are correctly named
         const week = this.dataset.week;
         if (courseName && week) {
+            console.log(`Lecture selected: Course - ${courseName}, Week - ${selectedWeek}`);
             loadLectureImages(courseName, week);
+            
         } else {
             console.error('Course name or week is undefined:', courseName, week);
         }
@@ -314,26 +346,18 @@ function displayLectureImages(images) {
     });
 }
 
-function setupEventListeners() {
-    const lectureItems = document.querySelectorAll('.lecture-item'); // Assuming you have elements with class "lecture-item"
-    lectureItems.forEach(item => {
-        item.addEventListener('click', () => {
-            const courseName = item.getAttribute('data-course-name'); // Ensure you have this attribute in HTML
-            const week = item.getAttribute('data-week'); // And this one too
-            loadLectureImages(courseName, week);
-        });
-    });
-}
-
 // This should be tied to a user action, such as clicking on a course.
 function handleCourseSelection(courseName) {
     if (!courseName) {
         console.error('No course name provided for fetching lectures.');
         return;
     }
+    
+    
     const apiUrl = getApiUrl(courseName);
     console.log('Attempting to fetch from URL:', apiUrl);
 
+    // Fetch lectures for the course
     fetch(apiUrl)
         .then(response => response.json())
         .then(data => {
@@ -342,7 +366,8 @@ function handleCourseSelection(courseName) {
                 showLectureImage(data[0].img);  // Continue using showLectureImage with only imageSrc
             }
             // Load transcript data as soon as the course is successfully selected
-            loadTranscriptData(courseName);
+            // loadTranscriptData(courseName);
+            loadTranscriptData(courseName) // Ensuring the transcript data is loaded
         })
         .catch(error => console.error('Fetch error:', error));
 }
@@ -471,21 +496,73 @@ document.getElementById('lastButton').addEventListener('click', () => {
     }
 });
 
+function navigateImages(direction) {
+    console.log(`Navigating ${direction}`);
+    switch (direction) {
+        case 'next':
+            if (currentIndex < currentWeekImages.length - 1) {
+                currentIndex++;
+            }
+            break;
+        case 'prev':
+            if (currentIndex > 0) {
+                currentIndex--;
+            }
+            break;
+        case 'first':
+            currentIndex = 0;
+            break;
+        case 'last':
+            currentIndex = currentWeekImages.length - 1;
+            break;
+    }
+    showLectureImage(currentWeekImages[currentIndex]);
+}
+
+
 // Play button event listener
 // Event listener for the play button
 document.getElementById('playButton').addEventListener('click', () => {
+    console.log("playButton cliked");
+
     if (isInLectureMode && currentWeekImages.length > 0 && currentIndex >= 0) {
         const imagePath = currentWeekImages[currentIndex];
-        const match = imagePath.match(/week_(\d+)\/week_(\d+)_page_(\d+)/);
-        const weekNumber = parseInt(match[1]);
-        const pageNumber = parseInt(match[3]);
+        // console.log("Current image path:", imagePath);  // Debugging: log the current image path
 
-        function searchByWeekAndPage(week, page) {
-            return transcriptData.filter(item => item.week === week && item.page === page);
+        const match = imagePath.match(/week_(\d+)\/week_(\d+)_page_(\d+)/);
+        if (!match) {
+            console.error('Failed to extract week and page numbers from imagePath:', imagePath);
+            return; // Exit the function if the match fails
         }
 
-        const textToSend = searchByWeekAndPage(weekNumber, pageNumber)[0]['transcript'];
-        fetchAndHandleTextToSpeech(textToSend);
+        const weekNumber = parseInt(match[1]);
+        const pageNumber = parseInt(match[3]);
+        // console.log(`Extracted week number: ${weekNumber}, page number: ${pageNumber}`);  // Debugging: log the extracted week and page numbers
+
+        // console.log(`Transcript Data:`, transcriptData); // Log the entire transcript data to check its structure and contents
+
+        function searchByWeekAndPage(week, page) {
+            const results = transcriptData.filter(item => item.week === week && item.page === page);
+            // console.log(`Search results for week ${week}, page ${page}:`, results);  // Debugging: log the search results
+            return results;
+        }
+
+        // const textToSend = searchByWeekAndPage(weekNumber, pageNumber)[0]['transcript'];
+        const searchResults = searchByWeekAndPage(weekNumber, pageNumber);
+        if (searchResults.length === 0) {
+            console.error('No transcript data found for the given week and page');
+            return; // Exit the function if no results found
+        }
+
+        const textToSend = searchResults[0]['transcript'];
+        if (textToSend) {
+            // console.log('Sending text to speech:', textToSend);  // Debugging: log the text being sent
+            fetchAndHandleTextToSpeech(textToSend);
+        } else {
+            console.error('Transcript is undefined for the current selection');
+        }
+
+        // fetchAndHandleTextToSpeech(textToSend);
     } else {
         console.log('No audio file associated with the current image or not in lecture mode.');
     }
@@ -610,7 +687,6 @@ function initializeChat() {
         chatArea.scrollTop = chatArea.scrollHeight;
     }
 }
-
 
 // Event listener for the send button
 document.getElementById('sendButton').addEventListener('click', () => {
@@ -738,6 +814,7 @@ document.querySelectorAll('.course-container').forEach(container => {
         const apiUrl = getApiUrl(courseName);
         console.log('Fetching lectures for course:', apiUrl);
 
+
         fetch(apiUrl)
             .then(response => response.json())
             .then(data => {
@@ -752,7 +829,7 @@ document.getElementById('chatButton').addEventListener('click', function() {
     console.log('Chat button clicked');
     const chatWindow = document.getElementById('chatWindow');
     chatWindow.classList.toggle('open');
-    console.log('Chat window visibility toggled, classList:', chatWindow.classList);
+    // console.log('Chat window visibility toggled, classList:', chatWindow.classList);
 });
 
 
@@ -765,12 +842,6 @@ function updateLoginStatus(status) {
     }
 }
 
-// Ensure the login function updates isLoggedIn
-// function handleLoginSuccess(data) {
-//     console.log('Logged in:', data);
-//     updateLoginStatus(true);
-// }
-
 function handleLoginSuccess(data) {
     console.log('Logged in:', data);
     updateLoginStatus(true);
@@ -779,37 +850,6 @@ function handleLoginSuccess(data) {
     document.getElementById('adminButton').style.display = 'inline-block'; // Show the admin button
 }
 
-// Event listener for login form submission
-// document.getElementById('loginForm').addEventListener('submit', function(event) {
-//     event.preventDefault();
-//     const username = document.getElementById('username').value;
-//     const password = document.getElementById('password').value;
-
-//     fetch('http://127.0.0.1:5000/login', {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json'
-//         },
-//         body: JSON.stringify({ username, password })
-//     })
-//     .then(response => {
-//         if (!response.ok) {
-//             throw new Error(`Failed to log in: ${response.status} ${response.statusText}`);
-//         }
-//         return response.json();
-//     })
-//     .then(data => {
-//         if (data.status === 'Logged in successfully') {
-//             handleLoginSuccess(data);
-//         } else {
-//             alert('Login failed: ' + data.message);
-//         }
-//     })
-//     .catch(error => {
-//         console.error('Login error:', error);
-//         alert('Login error: ' + error.message);
-//     });
-// });
 
 // Event listener for login form submission
 document.getElementById('loginForm').addEventListener('submit', function(event) {
@@ -896,3 +936,13 @@ document.getElementById('adminButton').addEventListener('click', function() {
     window.open('/user_administration', '_blank'); // Opens in a new tab
 });
 
+document.addEventListener('DOMContentLoaded', function () {
+    // Check if user is logged in and necessary variables are defined
+    if (typeof isLoggedIn !== 'undefined' && isLoggedIn && typeof defaultCourseName !== 'undefined' && typeof defaultWeek !== 'undefined') {
+        console.log('DOM fully loaded and parsed');
+        setupEventListeners();
+        console.log('Checking for lectureImagesContainer:', document.getElementById('lecture-images-container'));
+        loadLectureImages(defaultCourseName, defaultWeek);
+        // loadLectureImages('AIM 5005 Machine Learning', 'week_01');
+    }
+});

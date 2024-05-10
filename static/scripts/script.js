@@ -9,11 +9,12 @@ let isLoggedIn = false; // This should be globally accessible
 let currentAudioSrc = ''; // Variable to keep track of the current audio source
 let cachedCourses = [];  // This will hold the fetched courses data
 
+// Load transcript data
 function loadTranscriptData(courseName) {
-
+    
     const transcriptUrl = `/static/courses/${courseName}/transcript.json`;
     // console.log("Attempting to load transcript data from:", transcriptUrl); // Debugging: log the URL being accessed
-    
+ 
     fetch(transcriptUrl)
         .then(response => {
             if (!response.ok) {
@@ -107,7 +108,9 @@ function fetchImagesForWeek(weekName) {
 
 
 function populateMenu() {
-    const menu = document.getElementById('menu');
+    console.log('populateMenu()');
+
+    const menu = document.getElementById('menu'); // This should correctly point to the lecture menu
     menu.innerHTML = ''; // Clear the menu first
 
     // Check if the lectures array is empty and handle accordingly
@@ -123,33 +126,24 @@ function populateMenu() {
     const fragment = document.createDocumentFragment();
 
     lectures.forEach(lecture => {
+        console.log('lecture.week:', lecture.week); // This will log the name of each lecture
+        
         const lectureItem = document.createElement('div');
         lectureItem.classList.add('menu-item-container');
 
-        const img = document.createElement('img');
-        img.src = lecture.img;
-        img.alt = lecture.name;
-        img.classList.add('menu-item');
-
-        // Wrap the image in a button for better accessibility
         const button = document.createElement('button');
+        button.textContent = lecture.week; // Set the button text to the lecture name
         button.classList.add('menu-item-button');
-        button.appendChild(img); // The image becomes part of the button
-        button.addEventListener('click', () => handleLectureSelection(lecture.name));
+        button.addEventListener('click', () => loadLectureImages(courseName, lecture.week));
 
         lectureItem.appendChild(button);
-
-        const title = document.createElement('div');
-        title.textContent = lecture.name;
-        title.classList.add('menu-item-title');
-        lectureItem.appendChild(title);
-
         fragment.appendChild(lectureItem);
     });
 
     menu.appendChild(fragment);
 }
 
+// Fetch courses and display them in the menu
 function fetchCourses() {
     if (!isLoggedIn) {
         console.error('User is not logged in.');
@@ -161,7 +155,7 @@ function fetchCourses() {
         .then(courses => {
             // console.log('Courses received:', courses);
             cachedCourses = courses;  // Cache the courses data here
-            displayCourses(courses);
+             displayCourses(courses);
         })
         .catch(error => {
             console.error('Error loading courses:', error);
@@ -209,13 +203,15 @@ function displayCourses(courses) {
 }
 
 function fetchLecturesForCourse(courseName) {
+    console.log('fetchLecturesForCourse()')
+
     const apiUrl = `/api/lectures/${encodeURIComponent(courseName)}`;
     console.log('Fetching lectures for:', courseName);
 
     fetch(apiUrl)
         .then(response => response.json())
         .then(lectures => {
-            // console.log('Lectures:', lectures);
+            console.log('Lectures:', lectures);
             displayLectures(lectures, courseName); // Call displayLectures to update the UI
             loadTranscriptData(courseName); // Load transcript data as lectures are being displayed
         })
@@ -225,7 +221,55 @@ function fetchLecturesForCourse(courseName) {
         });
 }
 
+// function displayLectures(lectures, courseName) {
+//     const menu = document.getElementById('menu');
+//     menu.innerHTML = ''; // Clear the menu to display lectures
+
+//     // Create return arrow container
+//     const returnArrowContainer = document.createElement('div');
+//     returnArrowContainer.className = 'return-arrow-container';
+//     returnArrowContainer.addEventListener('click', () => {
+//         displayCourses(cachedCourses);  // Function to return to the courses display
+//     });
+
+//     const returnArrowImg = document.createElement('img');
+//     returnArrowImg.src = '/static/images/return_arrow.webp';
+//     returnArrowImg.alt = 'Return';
+//     returnArrowImg.className = 'return-arrow-image';
+
+//     returnArrowContainer.appendChild(returnArrowImg);
+//     menu.appendChild(returnArrowContainer);
+
+//     // Proceed to add lectures
+//     lectures.forEach(lecture => {
+//         const lectureDiv = document.createElement('div');
+//         lectureDiv.classList.add('menu-item-container');
+
+//         const img = document.createElement('img');
+//         img.src = lecture.img;
+//         img.alt = lecture.week;
+//         img.classList.add('menu-item-image');
+
+//         const title = document.createElement('div');
+//         title.textContent = lecture.week;
+//         title.classList.add('menu-item-title');
+
+//         // Add click event to load images from the lecture
+//         lectureDiv.addEventListener('click', () => {
+//             // Ensure courseName is passed along with the week
+//             loadLectureImages(courseName, lecture.week);
+//         });
+
+//         lectureDiv.appendChild(img);
+//         lectureDiv.appendChild(title);
+//         menu.appendChild(lectureDiv);
+//     });
+// }
+
 function displayLectures(lectures, courseName) {
+    console.log('displayLectures()')
+    console.log('Lectures:', lectures);
+
     const menu = document.getElementById('menu');
     menu.innerHTML = ''; // Clear the menu to display lectures
 
@@ -244,34 +288,36 @@ function displayLectures(lectures, courseName) {
     returnArrowContainer.appendChild(returnArrowImg);
     menu.appendChild(returnArrowContainer);
 
+    // Create a DocumentFragment to improve performance by minimizing reflows and repaints
+    const fragment = document.createDocumentFragment();
+
     // Proceed to add lectures
     lectures.forEach(lecture => {
-        const lectureDiv = document.createElement('div');
-        lectureDiv.classList.add('menu-item-container');
+        console.log('Lecture Name:', lecture.name); // Verify if names are correctly logged
 
-        const img = document.createElement('img');
-        img.src = lecture.img;
-        img.alt = lecture.week;
-        img.classList.add('menu-item-image');
-
-        const title = document.createElement('div');
-        title.textContent = lecture.week;
-        title.classList.add('menu-item-title');
-
-        // Add click event to load images from the lecture
-        lectureDiv.addEventListener('click', () => {
-            // Ensure courseName is passed along with the week
-            loadLectureImages(courseName, lecture.week);
-        });
-
-        lectureDiv.appendChild(img);
-        lectureDiv.appendChild(title);
-        menu.appendChild(lectureDiv);
+        
+        const lectureItem = document.createElement('div');
+        lectureItem.classList.add('menu-item-container');
+    
+        const button = document.createElement('button');
+        button.textContent = lecture.name;  // Set the button text to the lecture name
+        button.classList.add('menu-item-button');
+        // Add event listener to load images associated with the lecture
+        button.addEventListener('click', () => loadLectureImages(courseName, lecture.week));
+    
+        lectureItem.appendChild(button);
+        fragment.appendChild(lectureItem);  // Add each lecture item to the fragment
     });
+
+    // Finally, append the fragment to the menu
+    menu.appendChild(fragment);
 }
+
 
 // Function to fetch and display lecture images
 function loadLectureImages(courseName, week) {
+    console.log('Loading images for course:', courseName, 'Week:', week);
+
     const lectureImage = document.getElementById('lectureImage');
     const defaultText = document.getElementById('defaultText');
 
@@ -296,7 +342,6 @@ function loadLectureImages(courseName, week) {
         });
     // loadLectureImages(courseName, week);    
 }
-
 function setupNavigationButtons() {
     const nextButton = document.getElementById('nextButton');
     const prevButton = document.getElementById('prevButton');
@@ -346,14 +391,173 @@ function displayLectureImages(images) {
     });
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+    const chatButton = document.getElementById('chatButton');
+    const chatWindow = document.getElementById('chatWindow');
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const validUsername = "admin"; // Example username
+    const validPassword = "admin"; // Example password
+
+    document.getElementById('loginForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        let username = document.getElementById('username').value;
+        let password = document.getElementById('password').value;
+
+        if (username && password) {
+            if (username === validUsername && password === validPassword) {
+                console.log('Logged in successfully');
+                updateLoginStatus(true);
+            } else {
+                alert("Invalid username or password.");
+            }
+        } else {
+            alert("Please enter both username and password.");
+        }
+    });
+    if (!SpeechRecognition) {
+        console.error("Speech recognition not supported in this browser.");
+        return;
+    }
+    else {
+        console.log("Speech recognition supported in this browser.")
+    }
+
+    let recognition = new SpeechRecognition();
+    recognition.continuous = false; // We'll manually restart as needed
+    recognition.interimResults = true; // We want to show intermediate results
+
+    // Define what happens when speech is successfully recognized
+    recognition.onresult = function (event) {
+        var icon = document.getElementById('micButton').querySelector('i');
+        if (icon.classList.contains('fa-microphone')) {
+            console.log("Listening...");
+            const chatInput = document.getElementById('chatInput');
+            // Get the last piece of recognized speech and update the input field
+            const lastResultIndex = event.results.length - 1;
+            chatInput.value = event.results[lastResultIndex][0].transcript;
+
+            // Show live transcription in the message box
+            var messageBox = document.getElementById('messageBox');
+            messageBox.style.display = 'block'; // Make sure message box is visible
+            messageBox.textContent = chatInput.value; // Display the transcribed text
+        }
+        console.log("listening ....")
+        const chatInput = document.getElementById('chatInput');
+        // Get the last piece of recognized speech and update the input field
+        const lastResultIndex = event.results.length - 1;
+        chatInput.value = event.results[lastResultIndex][0].transcript;
+    };
+
+
+
+
+    document.getElementById('micToggle').addEventListener('click', function () {
+        const icon = this.querySelector('i');
+        if (icon.classList.contains('fa-microphone')) {
+            // Currently, the microphone is  listening; let's diasble it
+            icon.classList.remove('fa-microphone');
+            icon.classList.add('fa-microphone-slash');
+            console.log("Microphone disabled");
+            recognition.stop(); // Stop speech recognition
+        } else {
+            // Currently, the microphone is not listening; let's enable it
+            icon.classList.remove('fa-microphone-slash');
+            icon.classList.add('fa-microphone');
+            console.log("Microphone enabled");
+            recognition.start(); // Start speech recognition
+
+        }
+    });
+
+    //Speaking outside chat 
+    //document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('micButton').addEventListener('click', function () {
+            var icon = this.querySelector('i');
+            var messageBox = document.getElementById('messageBox');
+            //var animationGif = document.getElementById('animationGif');
+            if (icon.classList.contains('fa-microphone')) {
+                // Currently, the microphone is listening; let's disable it
+                icon.classList.remove('fa-microphone');
+                icon.classList.add('fa-microphone-slash');
+                console.log("Sending message now , clicking send");
+                recognition.stop(); // Stop speech recognition if applicable
+
+                // Simulate clicking the send button
+                document.getElementById('sendButton').click();
+                //show the animation 
+
+                // Show the GIF and message box
+               // messageBox.style.display = 'block';
+                //animationGif.style.display = 'block';
+                
+
+                // Set a timeout to hide the GIF after 2000 milliseconds (2 seconds)
+               /* setTimeout(function () {
+                    animationGif.style.display = 'none'; // Hide the GIF
+                    messageBox.style.display = 'none'; // Optionally hide the message box too if nothing else is displayed
+                }, 2000); */
+                // 2000 milliseconds = 2 seconds
+                // Make the API call and show the answer
+                var messageBox = document.getElementById('messageBox');
+                messageBox.style.display = 'block'; // Show the message box
+                messageBox.textContent = 'Processing your request...'; // Change message to reflect the action
+            } else {
+                // If the microphone is not listening, enable it
+                icon.classList.remove('fa-microphone-slash');
+                icon.classList.add('fa-microphone');
+                console.log("Microphone enabled");
+                recognition.start(); // Start speech recognition if applicable
+                // Ensure the GIF and message box are hidden (useful if button is quickly toggled)
+               // animationGif.style.display = 'none';
+                //messageBox.style.display = 'none';
+            }
+        });
+    //});
+
+
+
+
+
+    //remove the messageBox
+    document.addEventListener('click', function () {
+        var messageBox = document.getElementById('messageBox');
+        if (messageBox.style.display === 'block') {
+            messageBox.style.display = 'none'; // Hide the message box
+        }
+    });
+    document.getElementById('speakerToggle').addEventListener('click', function () {
+        const icon = this.querySelector('i');
+        if (icon.classList.contains('fa-volume-up')) {
+            // Sound is currently on; mute it
+            icon.classList.remove('fa-volume-up');
+            icon.classList.add('fa-volume-mute');
+            console.log("Sound muted");
+            // Add functionality to mute the sound
+        } else {
+            // Sound is currently off; turn it on
+            icon.classList.remove('fa-volume-mute');
+            icon.classList.add('fa-volume-up');
+            console.log("Sound on");
+            // Add functionality to play the sound
+        }
+    });
+
+    chatButton.addEventListener('click', () => {
+        console.log('Chat button clicked');
+        const chatWindow = document.getElementById('chatWindow');
+        chatWindow.classList.toggle('open');
+        // console.log('Chat window visibility toggled, classList:', chatWindow.classList);
+    });
+});
+
 // This should be tied to a user action, such as clicking on a course.
 function handleCourseSelection(courseName) {
     if (!courseName) {
         console.error('No course name provided for fetching lectures.');
         return;
     }
-    
-    
+
+
     const apiUrl = getApiUrl(courseName);
     console.log('Attempting to fetch from URL:', apiUrl);
 
@@ -368,7 +572,7 @@ function handleCourseSelection(courseName) {
             // Load transcript data as soon as the course is successfully selected
             // loadTranscriptData(courseName);
             loadTranscriptData(courseName) // Ensuring the transcript data is loaded
-        })
+         })
         .catch(error => console.error('Fetch error:', error));
 }
 
@@ -529,6 +733,11 @@ document.getElementById('playButton').addEventListener('click', () => {
         const imagePath = currentWeekImages[currentIndex];
         // console.log("Current image path:", imagePath);  // Debugging: log the current image path
 
+        if (!imagePath) {
+            console.log('Select slide!');
+            return; // Exit the function if imagePath is undefined
+        }
+
         const match = imagePath.match(/week_(\d+)\/week_(\d+)_page_(\d+)/);
         if (!match) {
             console.error('Failed to extract week and page numbers from imagePath:', imagePath);
@@ -543,7 +752,7 @@ document.getElementById('playButton').addEventListener('click', () => {
 
         function searchByWeekAndPage(week, page) {
             const results = transcriptData.filter(item => item.week === week && item.page === page);
-            // console.log(`Search results for week ${week}, page ${page}:`, results);  // Debugging: log the search results
+            console.log(`Search results for week ${week}, page ${page}:`, results);  // Debugging: log the search results
             return results;
         }
 
@@ -616,14 +825,44 @@ document.getElementById('chatInput').addEventListener('keydown', (event) => {
     }
 });
 
+// Function to speak text using SpeechSynthesis
+function speakText(text) {
+    console.log("gonna speak");
+    if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 1.0;
+        const voices = window.speechSynthesis.getVoices();
+        const selectedVoice = voices.find(voice => voice.name === 'Google UK English Male')
+        utterance.voice = selectedVoice;
+        window.speechSynthesis.speak(utterance);
+    } else {
+        console.log("Speech synthesis not supported in this browser.");
+    }
+}
+
+
 function sendMessage(question) {
     const chatArea = document.getElementById('chatArea');
 
     if (!isInLectureMode) {
         // Display a message that a slide needs to be selected first
         const warningBubble = document.createElement('div');
+        //warningBubble.classList.add('chat-message', 'model-message');
+        //warningBubble.textContent = "Please select a slide to start chatting.";
+
+        
+        //const modelBubble = document.createElement('div');
         warningBubble.classList.add('chat-message', 'model-message');
-        warningBubble.textContent = "Please select a slide to start chatting.";
+        const modelIcon = document.createElement('span');
+        modelIcon.classList.add('fas', 'fa-dove', 'avatar'); // Using 'fa-dove' for the bird icon
+        const modelText = document.createElement('div');
+        modelText.classList.add('message-text');
+        modelText.textContent = "Please select a slide to start chatting.";
+        warningBubble.appendChild(modelIcon); // Ensure we're appending modelIcon here
+        warningBubble.appendChild(modelText);
+        //chatArea.appendChild(modelBubble);
+
+
         chatArea.insertBefore(warningBubble, chatArea.firstChild); // Insert at the beginning
         return; // Exit the function to avoid further processing
     }
@@ -631,41 +870,100 @@ function sendMessage(question) {
     // Create a bubble for the user's question
     const userBubble = document.createElement('div');
     userBubble.classList.add('chat-message', 'user-message');
-    userBubble.textContent = question;
-    chatArea.insertBefore(userBubble, chatArea.firstChild); // Insert at the beginning
+
+    // Create div for message text (to allow flex styling)
+    const userText = document.createElement('div');
+    userText.classList.add('message-text');
+    userText.textContent = question;
+
+    // Create a span for the user icon using Font Awesome
+    const userIcon = document.createElement('span');
+    userIcon.classList.add('fas', 'fa-user', 'avatar');
+
+    // Append the message text and icon to the bubble
+    userBubble.appendChild(userText); // Text first for alignment
+    userBubble.appendChild(userIcon); // Icon after text
+
+    chatArea.appendChild(userBubble);
+
 
     // Get the current image path
     const imagePath = currentWeekImages[currentIndex];
+    // Prepare form data to send image and question
     const formData = new FormData();
 
     // Fetch the image and create a blob, then append it to the form data
     fetch(imagePath)
-    .then(response => response.blob())
-    .then(blob => {
-        formData.append('image', blob, imagePath.split('/').pop());
-        formData.append('question', question);
+        .then(response => response.blob())
+        .then(blob => {
+            formData.append('image', blob, imagePath.split('/').pop());
+            formData.append('question', question);
 
-        // Post the form data to your API endpoint
-        fetch('/api/vqa', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Create a bubble for the model's answer
-            const modelBubble = document.createElement('div');
-            modelBubble.classList.add('chat-message', 'model-message');
-            modelBubble.textContent = data.answer; // Use the actual response
-            chatArea.insertBefore(modelBubble, chatArea.firstChild); // Insert at the beginning
+            // Post the form data to your API endpoint
+            fetch('https://6413-129-98-38-191.ngrok-free.app/predict', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // Create a bubble for the model's answer
+                    const modelBubble = document.createElement('div');
+                    modelBubble.classList.add('chat-message', 'model-message');
+                    //adding sparrow image 
+                    //const modelAvatar = document.createElement('img');
+                    //modelAvatar.src = 'web_VQA-main/web_VQA-main/static/scripts/sparrow.jpeg'; // Path to your model's avatar image
+                    //modelAvatar.classList.add('avatar');
+                    // Create a span for the model icon using Font Awesome
+                    const modelIcon = document.createElement('span');
+                    modelIcon.classList.add('fas', 'fa-dove', 'avatar'); // Using 'fa-dove' for the bird icon
+                    const modelText = document.createElement('div');
+                    modelText.classList.add('message-text');
+                    modelText.textContent = data.answer;
+                    modelBubble.appendChild(modelIcon); // Ensure we're appending modelIcon here
+                    modelBubble.appendChild(modelText);
+                    chatArea.appendChild(modelBubble);
 
-            // Auto-scroll to the latest message
-            chatArea.scrollTop = chatArea.scrollHeight;
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            // Handle errors, e.g., show an error message in the chat
+
+                    //speakText( data.answer);
+                    const speakerIcon = document.querySelector('#speakerToggle i');
+                    console.log("detecting:", speakerIcon);
+                    if (speakerIcon && speakerIcon.classList.contains('fa-volume-up')) {
+                        console.log("detecting speaker");
+                        speakText(data.answer);
+                    }
+
+                    const micIcon = document.querySelector('#micToggle i');
+                    // Assuming you have speech recognition set up similarly to previous examples
+                    if (micIcon.classList.contains('fa-microphone')) {
+                        // If the microphone is on, turn it off
+                        micIcon.classList.add('fa-microphone-slash');
+                        micIcon.classList.remove('fa-microphone');
+                        recognition.stop(); // Assuming 'recognition' is your SpeechRecognition instance
+                        console.log("Microphone turned off");
+                    }
+
+                    // Auto-scroll to the latest message
+                    chatArea.scrollTop = chatArea.scrollHeight;
+
+                    // Check if chatWindow has the class 'open'
+                    const chatWindow = document.getElementById('chatWindow');
+                    if (!chatWindow.classList.contains('open')) {
+                        // If chatWindow is not open, also display the answer in MessageBox and trigger speaker
+                        const messageBox = document.getElementById('messageBox');
+                        messageBox.style.display = 'block'; // Make sure MessageBox is visible
+                        messageBox.textContent = data.answer; // Display answer in MessageBox
+
+                        //make the speaker work
+                            console.log("using speaker");
+                            speakText(data.answer); // Assuming speakText is your function to speak the answer
+                       
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // Handle errors, e.g., show an error message in the chat
+                });
         });
-    });
 
     // Clear the input field
     chatInput.value = '';
@@ -673,19 +971,26 @@ function sendMessage(question) {
 
 
 function initializeChat() {
-    const chatArea = document.getElementById('chatArea');
+    console.log("initializing");
+    document.addEventListener('DOMContentLoaded', (event) => {
 
-    // Check if the chatArea is empty before adding the initial message
-    if (!chatArea.hasChildNodes()) {
-        // Create a bubble for the model's initial message
-        const modelBubble = document.createElement('div');
-        modelBubble.classList.add('chat-message', 'model-message');
-        modelBubble.textContent = "I'm here to support you! If you have any questions or need assistance, feel free to ask.";
-        chatArea.appendChild(modelBubble);
+        const chatArea = document.getElementById('chatArea');
 
-        // Ensure the initial message scrolls to the bottom
-        chatArea.scrollTop = chatArea.scrollHeight;
-    }
+        // Check if the chatArea is empty before adding the initial message
+        if (!chatArea.hasChildNodes()) {
+            // Create a bubble for the model's initial message
+            const modelBubble = document.createElement('div');
+            modelBubble.classList.add('chat-message', 'model-message');
+            modelBubble.textContent = "I'm here to support you! If you have any questions or need assistance, feel free to ask.";
+            const modelIcon = document.createElement('span');
+            modelIcon.classList.add('fas', 'fa-dove', 'avatar'); // Using 'fa-dove' for the bird icon
+            modelBubble.appendChild(modelIcon); // Ensure we're appending modelIcon here
+            chatArea.appendChild(modelBubble);
+
+            // Ensure the initial message scrolls to the bottom
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+   });
 }
 
 // Event listener for the send button
@@ -796,6 +1101,7 @@ function getApiUrl(courseName) {
     return `http://127.0.0.1:5000/api/lectures/${encodedCourseName}`;
 }
 
+// Assume this is only called under appropriate conditions, such as after login
 document.getElementById('lessonsButton').addEventListener('click', function() {
     const menu = document.getElementById('menu');
     if (menu.style.left === '0%' || menu.style.left === '0px') {
@@ -825,12 +1131,7 @@ document.querySelectorAll('.course-container').forEach(container => {
     });
 });
 
-document.getElementById('chatButton').addEventListener('click', function() {
-    console.log('Chat button clicked');
-    const chatWindow = document.getElementById('chatWindow');
-    chatWindow.classList.toggle('open');
-    // console.log('Chat window visibility toggled, classList:', chatWindow.classList);
-});
+
 
 
 // Function to update login status
@@ -944,5 +1245,52 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log('Checking for lectureImagesContainer:', document.getElementById('lecture-images-container'));
         loadLectureImages(defaultCourseName, defaultWeek);
         // loadLectureImages('AIM 5005 Machine Learning', 'week_01');
+    }
+});
+
+
+document.getElementById('editSaveButton').addEventListener('click', function() {
+    // console.log('currentWeekImages:', currentWeekImages);
+    // console.log('currentIndex:', currentIndex);
+
+    const imagePath = currentWeekImages[currentIndex];
+    // console.log('imagePath:', imagePath);
+
+    if (!imagePath) {
+        console.log('Select slide!');
+        return; // Exit the function if imagePath is undefined
+    }
+
+    // const match = imagePath.match(/week_(\d+)\/week_(\d+)_page_(\d+)/);
+    const match = imagePath.match(/\/courses\/([^\/]+)\/([^\/]+)\/week_(\d+)\/week_\d+_page_(\d+)\.png/);
+    if (!match) {
+        console.error('Failed to extract week and page numbers from imagePath:', imagePath);
+        return; // Exit the function if the match fails
+    }
+    // console.log('match:', match);
+
+    const course = match[1];
+    const week = parseInt(match[3]);
+    const page = parseInt(match[4]);
+    
+    // console.log('course:', course);
+    // console.log('week:', week);
+    // console.log('page:', page);
+    // console.log('transcriptData:', transcriptData);
+    // console.log(`Transcript Entry:`,  transcriptData.filter(item => item.week === week && item.page === page)[0]['transcript']);
+
+
+    const transcriptEntry = transcriptData.filter(item => item.week === week && item.page === page)[0]['transcript'];
+    // console.log(`transcriptEntry:`,  transcriptEntry);
+
+    if (transcriptEntry) {
+        // Serialize the transcript data into a query parameter
+        const cleanTranscript = typeof transcriptEntry === 'string' ? transcriptEntry.replace(/^"|"$/g, '') : transcriptEntry;
+        const serializedData = encodeURIComponent(JSON.stringify(cleanTranscript));
+        console.log(`serializedData:`,  serializedData);
+        const editorUrl = `/edit_transcript/${course}/${week}/${page}?transcript=${serializedData}`;
+        window.open(editorUrl, '_blank');
+    } else {
+        console.error('Transcript data not found for the given week and page');
     }
 });

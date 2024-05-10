@@ -60,7 +60,7 @@ embeddings_dataset = load_dataset("Matthijs/cmu-arctic-xvectors", split="validat
 speaker_embedding = torch.tensor(embeddings_dataset[7306]["xvector"]).unsqueeze(0).to(device)
 # You can replace this embedding with your own as wel
 
-stt_model = whisper.load_model("base")
+#stt_model = whisper.load_model("base")
 
 
 def get_db_connection():
@@ -493,8 +493,8 @@ def get_transcript_data():
 def save_transcript():
     data = request.get_json()
     course_name = data.get('courseName')
-    week = data.get('week')
-    page = data.get('page')
+    week =int(data.get('week'))
+    page = int(data.get('page'))
     updated_transcript = data.get('transcript')
 
     path = f'static/courses/{course_name}/transcript.json'
@@ -503,10 +503,15 @@ def save_transcript():
         with open(path, 'r', encoding='utf-8') as file:
             transcripts = json.load(file)
         
-        # Update the transcript for the specified week and page
-        if str(week) in transcripts and str(page) in transcripts[str(week)]:
-            transcripts[str(week)][str(page)] = updated_transcript
-        else:
+        # Find the correct transcript entry and update it
+        updated = False
+        for transcript in transcripts:
+            if transcript.get('week') == week and transcript.get('page') == page:
+                transcript['transcript'] = updated_transcript
+                updated = True
+                break
+
+        if not updated:
             return jsonify({'error': 'Week or page not found'}), 404
         
         # Write the updated data back to the file
@@ -520,6 +525,7 @@ def save_transcript():
         return jsonify({'error': 'Error decoding JSON'}), 500
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
  
 @app.route('/edit_transcript/<course>/<week>/<page>')
 def edit_transcript(course, week, page):

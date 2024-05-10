@@ -87,6 +87,8 @@ document.addEventListener('DOMContentLoaded', function() {
 function saveTranscript(courseName, week, page, transcript) {
     console.log('Sending data to server:');
     console.log(`Course Name: ${courseName}, Week: ${week}, Page: ${page}, Transcript: ${transcript}`);
+    console.log(`Week:` + week);
+    console.log(`Page:` + page);
 
     fetch('/api/save-transcript', {
         method: 'POST',
@@ -100,18 +102,18 @@ function saveTranscript(courseName, week, page, transcript) {
             transcript: transcript
         })
     })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Failed to save transcript');
-        }
-        return response.json();
-    })
+    .then(response => response.json())
     .then(data => {
-        console.log('Transcript saved successfully:', data);
+        if (data.error) {
+            console.error('Error saving transcript:', data.error);
+        } else {
+            console.log('Transcript saved successfully:', data.message);
+        }
     })
     .catch(error => {
         console.error('Error saving transcript:', error);
     });
 }
+
 
 </script>

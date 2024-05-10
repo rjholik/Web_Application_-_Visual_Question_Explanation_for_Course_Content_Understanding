@@ -1,0 +1,602 @@
+[
+    {
+        "transcript": "As you guys noticed that I'm currently an assistant professor at our AI program.",
+        "week": 1,
+        "page": 1
+    },
+    {
+        "transcript": "And I want to quickly talk about my research directions. So, basically, there are four different directions that I focus on. The first one is called the transfer learning. Specifically, I focus on tasks called domain adaptation, which I will show you what is domain adaptation methods later. And then I focus on manifold learning. The manifold learning is in a different space from what we already know about Euclidean space. And then I'm interested in shape analysis. So, I want to predict some shift changes with the increasing length of the age. And then lastly, I'm very interested in audio denoising nowadays. So, you guys will see some slides about it.",
+        "week": 1,
+        "page": 2
+    },
+    {
+        "transcript": "So, let's first talk about the domain adaptation. So, what is it and how to solve this problem? As you guys can see from this image. In in the left side, we call this training dataset. And the right side, we call it as test.",
+        "week": 1,
+        "page": 3
+    },
+    {
+        "transcript": "The importance why domain adaptation is necessary, because really we want to address the difference between the source domain and the type domain. And this is the one model that we previously proposed, called GeoDefix, the example on Manipold and the hero. The key thing is that we want to generate some intermediate points between your source domain and the type domain. So the source domain here is more like a monkey, right? And the type domain is like a walking human being. So using this model, you can show how this monkey changes into the world human being, right? And you can record bouncing, for its balance, if you do this, bigger dots, and this like, intermediate state. So by doing, people are doing how this monkey changes, you are able to adapt from recognize a monkey to recognize. You can do that. You must do this, you must do another one.",
+        "week": 1,
+        "page": 4
+    },
+    {
+        "transcript": "And also, I mean, just in the shape analysis, so if it was this project, actually, we want to predict some shape changes with the increasing of age. For example, your inputs, for example, that one adjusted your age. So now it's just 16, you see the example. And then your output is about some kind of the shape. So here, this shape is called the Cops Cousin, which is a branch structure that is related to memory, especially related to your, how the hammer disease is. So if you find your Cops Cousin, like this part is the shrink, or this part is shrink, you probably more likely to have those kind of diseases. Right. And we also have an application about the client part of the documentation. So in this part, you may focus on this part, how the changes within the changes of image is provided, you keep your mind as this part. So that you can very predict, like behavior of this part. And also, this is about some documentation, the classification results of the how-today area. This blue bunny box refers to the location of the tether area. And this is different powers, so specifically, segment each of these, so that you can predict whether you have disease or not. So here, what means if normal, two means abnormal, majority of time it is normal, so there's a lot of ones here. But again, you can also choose here, which means the absence in one is there to the area. And also, this is another application about all your denoting, so we actually, it's more like a speech, a recommendation on which you denoting stuff, we're referring with how you put a stuff, seeing those stuff, right. And then, out of that, we can convert it to the audio image. I don't know whether some of you further follow this STFG. And you guys, where is STFG? Here, right. Yeah, it's done can also, fully transform the one that means the problem. Short time fully transform, but then it is just one parent to up here fully transform. So out of that, and get some audio images, and then we'll get some different lighting, and some recommendation models, so that we can get a second man to the audio image, so that we can apply the inverse of STFG, so that we can get a new noise signal, so that we can set that way. I assume the purpose of audio-denoicing, as here, just in video, clear is about that. Here are more results about the speech of genoising. I don't know whether we can place this video on audio notes. The same is not a good one, but anyway, we can directly see the from the signals here. So it is signal, you can see there are lots of noise in here, right. So after genoising, you can see we can have clear patterns of these signals, and this is about image speech, and we also have results of audio separation. We can pay attention to this figure again. So in the left hand, it is the original noisy image. In the right hand, our segment is all separated, audio, those blue colors meet the first one, and this yellow color means the first sound to the right. So we can successfully assume which is two different sounds. And we also have a nice application about all your announcements. In the left hand, so this blue color means means a noisy sound, and I don't know whether that has any this need of time area. So this is referred to as a sound area, otherwise this is very tiny. You barely can't hear it. After use our model, we can zoom in so that we can get a bigger volume of this sound. So especially, this is where we have a very useful for people who have a hairy lost problem.",
+        "week": 1,
+        "page": 5
+    },
+    {
+        "transcript": "I will show where is the domain page. The main adaptation methods later. And then I focus on medical, the medical learning is the different space from what we already know about the Ukrainian space. And then interestingly, the shift analysis that I want to predict some shift change with the increasing of the age.",
+        "week": 1,
+        "page": 6
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 7
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 8
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 9
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 10
+    },
+    {
+        "transcript": "I don't know whether that has any this need of time area. So this is referred to as a sound area, otherwise this is very tiny. You barely can't hear it. After use our model, we can zoom in so that we can get a bigger volume of this sound. So especially, this is where we have a very useful for people who have a hairy lost problem. ",
+        "week": 1,
+        "page": 11
+    },
+    {
+        "transcript": "Now let's quickly talk about today's roadmap. First of all, that's what I will call a review of something you guys and you may need a pay attention to.",
+        "week": 1,
+        "page": 12
+    },
+    {
+        "transcript": "And this is about tech folks. So actually, we are used to light it up from the community media to explode. Although we have the majority of our parts of our time about what's given and you start.",
+        "week": 1,
+        "page": 13
+    },
+    {
+        "transcript": "And this is kind of very good textbook for you. And you guys should about our costs. They eventually write our cost time, our location, and you should have access to the zoom link there.",
+        "week": 1,
+        "page": 14
+    },
+    {
+        "transcript": "And here, it also are very good sources for you guys. For example, given any help, we'll pay some the pay given lady by Golden Fellow. And there are lots of very useful links for you guys and try.",
+        "week": 1,
+        "page": 15
+    },
+    {
+        "transcript": "And we also have always hours that oh sorry, it should be Thursday, not Wednesday. I will have the exact several days. So today, I guess Wednesday is come to my August hour. Why? What is that? It's really zero. It's not. It's not. It's not. Not really. Thursday? Okay. Yeah, I forgot. So, you say so, Wednesday is come to my August hour. But there we have like our faculty interview candidates come. So I cannot make it. But it should be bank normal. It's not going between the support you file. ",
+        "week": 1,
+        "page": 16
+    },
+    {
+        "transcript": "Study. But it's what. It's what. Okay. Let's get. Okay. Continue. Yeah, just some me. Prayer Requests for them. Just a very easy about your last about the Python. I think most of you maybe all of you shouldn't have any questions about it. Right. And then here is the big simple guys. As I said, about your discussion and response and response and assignment is more like a adhesive patient about the same age. Right.",
+        "week": 1,
+        "page": 17
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 18
+    },
+    {
+        "transcript": "And it's very I really like to do that kind of a kind of Z-check online. And then we also have like three kind of big project for you guys. And then there is that is about 40%. And then we also have like seven more. And then our actually five the highest one. And the last that we have a final very big project like so do you percent. So totally we have like very fine in this case. And then next I think somehow you made your first message to the many to know about in our ledger skills here. Let's get to students skills.",
+        "week": 1,
+        "page": 19
+    },
+    {
+        "transcript": "nd again, it's the confidence that I will try to cover now. What's the matter? So first I about this week in Introduction to Learning. And then in the next like five or four weeks. I want to talk about how to process the menus. So before we talk about you networks. How do a travel features? We have you know in a traditional way. How do we try some individuals? Right. In the yesterday in the machine learning class, we will not talk about how a traffic is the way we are doing today. With that poster. four weeks.",
+        "week": 1,
+        "page": 20
+    },
+    {
+        "transcript": "So after that in the week six, I already have about your networks. Then from movement networks. Then some of our object detection. Then eventually we talk about some semantic experimentation. And we have two ways at the holiday. I don't know whether it has no use there or not. Right. I especially so far. So constantly adding questions from our online space. What's the two kids we used in this course like PyTorch or TensorFlow? Yeah, that's a good question. So majority of the last day we will use PyTorch. In the first of the four weeks, you will just use some basic Python for the rest of the list. You're another one to the end. We will use PyTorch. Not a user TensorFlow. But sometimes either we have the difficulty of handle TensorFlow because there's different versions of them. Sometimes you even have the GPU there. So that's really then we will use PyTorch. Especially the GPU version. PyTorch. If you have if you have a real available to use like fast AI or something like that. So Hello professor, we can't hear you. Yes, sir. You're not audible. You're not a PME. Okay, so that just done here. The business is wrong with this. The stuff. Okay, maybe I can just stand here. Any other questions? No. Okay, that's good",
+        "week": 1,
+        "page": 21
+    },
+    {
+        "transcript": "Let's continue about our introduction of deep learning. So next I will talk some what is deep learning on the way. Starting deep learning here. I see you guys here about the artificial intentions for still many times. Right? And you have a mission in you now. So what so that we use the birthday. Probably not. Yes, I think I already answered the questions. Your point. For the outcast, I will give you guys implement them more than the life problems. You will not use the birthday and will start. But it's just is a typical life. I thought you library and then you can do something like implement your own your network. You can implement so like that. ",
+        "week": 1,
+        "page": 22
+    },
+    {
+        "transcript": "So first AI is not that we're prepared to do that. What is artificial intentions? In yesterday's class, I already mentioned about that. By I think some of you guys may already see it. The artificial intentions is ability of computer perform tasks.",
+        "week": 1,
+        "page": 23
+    },
+    {
+        "transcript": "So machinerity is a branch of artificial intentions, which focuses on the methods that learn from data and make predictions unseen data. And what is different learning? So different learning actually is another subfield of machine learning focused on learning data representations as successful layers of increasing willing replantations to mostly about different learning reports about representation of data. So that is a key part. So here is this figure shows the relationship with these different three terms. The biggest one there is artificial intelligence and the second wise machine learning and the otherwise the people learning part and here is about its history is like in the 1950s and to the the the so that you learning together I promise that in this chart we won't try to distinguish the traditional learning and the people learning in part.",
+        "week": 1,
+        "page": 24
+    },
+    {
+        "transcript": "So for the traditional machine learnings we actually want to extract some had the property the features from the images and then we tried to transform classifies that the mega prediction has kept but for the deep learning or into the learning we more likely to try to extract different kind of features for example like then the low level features the middle level features and the high level features for those given the features are covered in the several slides later so after we get those bunch of features where we can say that we are able to learn classifies so that we can get our robots classifying make plan classification.",
+        "week": 1,
+        "page": 25
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 26
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 27
+    },
+    {
+        "transcript": " And this chart will show your relationship between your among data and the performance So here is a means a number of level of data sets and this is about the performance in the early stage if you really have a small number of data sets you see your performance can be not that good right so let me you have more and more that level that's and that's a like a few system please call your friends that you will have also have very large you're another one can find the performance where you very high and this observation is like amnivality so many kind of that's especially from now that's that for the image lens ",
+        "week": 1,
+        "page": 28
+    },
+    {
+        "transcript": " I don't know whether I can't roll that out because that is a famous one in the computer world and here in this slide you should pray for about the history of tibaleni or AI so from early even 300 VC to recently maybe we can have a short word of it because there are too many comments there so here is about the brief story of tibaleni we may care about when you're in that world comes out right it is it is back to the 1960s as a time however once the new Dan Walker is proposed by some neurologist that is the fund that that is not working because there has some popular channels and other like until like 1980s once the final propagation was invented without ever showing another one and after that 1990s you're never once thanks to the band-state just motor-backer machines due to the nice theory property and again in the bonds and in the machine because we are not about the motor-backer machines and I believe some of you may already know about the motor-backer machines right let's go and once we go back to some and 10 so at that time like nudgey bologna becomes popular because of we really can change a deeper and a deeper and other ones ",
+        "week": 1,
+        "page": 29
+    },
+    {
+        "transcript": "and here I want to mention different types of machine learning typically we have three of them supervised learning supervised learning and re-opestival as I already mentioned is machine learning plus so what is the supervised learning and is the real yeah yes that's true so how does that what about the supervised learning is the important principle yes what about really what's the then the thing is the people are then the machines are the machines yeah yes correct",
+        "week": 1,
+        "page": 30
+    },
+    {
+        "transcript": "that's good so guys are ready for me and I was always different kind of extreme machine learning actually and I don't know whether some of your places can out like further you know then right is really it is reluctant some really wasn't very far you need interact with this environment you get a high squad right there's still quite a good work and what are the members of machine learning",
+        "week": 1,
+        "page": 31
+    },
+    {
+        "transcript": "hat is the most important part of machine learning that you take out of the morning which is used to train correct so we actually first of we care about the data set right so that is about data so human lives by operation and by learning more like that and the model of the world that comes as a reasoning and the should really learn lots of data especially about the data set although now data is quite learning can be a good way without the human levels finally out of that is like 80% of then we have a question finally but for any one that you have no way to invade your models that are not there until the green and not a trust that is a large right that you do well and you very very very and here is about the representation of your data set for example in one cancer it can be just a white be just a cancer while a vector and the 2D cancer just a matrix like an image a green risk your image and the 3D you may have like R2B you may and you you you have 40 and then you have a lot of dimensions of data and the training for the machine learning algorithm w",
+        "week": 1,
+        "page": 32
+    },
+    {
+        "transcript": "we will have a training stage you may also have a validation stage and we also have a test stage about that so the validation is steady we want to tune our model to some high parameters and then we will use it in the test of the set and then we will also try to use some kind of medium batch trying to train our models so that you're going to save your time and save your time and ahead just a general what about the learning or training or inference so why you here just a prediction and have just a function or classify the acts here just imputes like for example our image and",
+        "week": 1,
+        "page": 33
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 34
+    },
+    {
+        "transcript": "the data here just means parameters and the help parameters there and now seeing why we have more you may notice that we need optimization by how we've got a good results in mathematics the for the open-mindedness that is about the selection of best elements with regard to some criteria from some sets of available alternatives and there are like three different types the finite step iterative heristic ",
+        "week": 1,
+        "page": 35
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 36
+    },
+    {
+        "transcript": "now seeing why we have more you may notice that we need optimization by how we've got a good results in mathematics the for the open-mindedness that is about the selection of best elements with regard to some criteria from some sets of available alternatives and there are like three different types the finite step iterative heristic ",
+        "week": 1,
+        "page": 37
+    },
+    {
+        "transcript": "and ahead just about the cost of function of your model for example we have this first part is about your loss function and the second part is about the regularization the purpose of writing the relation is trying to add some penalty of a model to provide some problem like for example that would be different let's briefly review about what is our condition so our organization is really one you get the ultimate line and our ultimate results by using some method like eventually actually this kind of stage and one method is for the gradient descent that is and the directive and the minima and the maxima functions so the gradient is the directive of the archivier functions so here is typical of the methods of gradient descent that in China up what is up here what is up the linear linear linear and property the methods is about the linear rake or the stem sucks is a similar stuff so what do you think you have our paper the right we can go faster but only faster better big better bigger than your research we converge fast but also it will lose system might lose the minima point to skip the the minima point yes exactly what about if you have our very small linear team in there is no and it might take a lot of time to converge yeah the amount of the way i have the the the the the the the the so which means that for the archivier very new to the proper value of the archivier the the hard so and them the the important pattern how much many few of the day we like it about overpeaching or underpeaching so what is overpeaching the modern non-s data exactly predicts the prediction that is very good trading part is testing all the data all the data is yes so all the best you know very high high high performance at that stage you have very bad performance because you have too much what about underfitting in the case when even our model doesn't work very good even on a trained data not only on test data yes exactly for underpeaching even if you are in the training you did not do you know right that's by the meaning of that you know and also that make up of the you know the the the the the the the the more details you are in our courses so next let's try to talk about the different lessons we are really care about the course master right for the different other words so those are the four important components plus of what we care about the layers how many layers you want to get right how do you want to get and then we now we care about how we input the data and we care about our targets what is by the end result we want to work together yeah, end result that we desire to get all the end result that we desire to get all the end result that we have more like your levels right rather than levels and ",
+        "week": 1,
+        "page": 38
+    },
+    {
+        "transcript": " so our optimization is really one you get the ultimate line and our ultimate results by using some method like eventually actually this kind of stage and one method is for the gradient descent that is and the directive and the minima and the maxima functions so the gradient is the directive of the archivier functions so",
+        "week": 1,
+        "page": 39
+    },
+    {
+        "transcript": "here is typical of the methods of gradient descent that in China up what is up here what is up the linear linear linear and property the methods is about the linear rake or the stem sucks is a similar stuff so what do you think you have our paper the right we can go faster but only faster better big better bigger than your research we converge fast but also it will lose system might lose the minima point to skip the the minima point yes exactly what about if you have our very small linear team in there is no and it might take a lot of time to converge yeah the amount of the way i have the the the the the the the the so which means that for the archivier very new to the proper value of the archivier the the hard so and ",
+        "week": 1,
+        "page": 40
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 41
+    },
+    {
+        "transcript": "then the the important pattern how much many few of the day we like it about overfitting or underfitting so what is overfitting the modern non-s data exactly predicts the prediction that is very good trading part is testing all the data all the data is yes so all the best you know very high high high performance at that stage you have very bad performance because you have too much what about underfitting in the case when even our model doesn't work very good even on a trained data not only on test data yes exactly for underpeaching even if you are in the training you did not do you know right that's by the meaning of that you know and also that make up of the you know the the the the the the the the more details you are in our courses so next let's try to talk about the different lessons we are really care about the course master right for the different other words so those are the four important components plus of what we care about the layers how many layers you want to get right how do you want to get and then we now we care about how we input the data and we care about our targets what is by the end result we want to work together yeah, end result that we desire to get all the end result that we desire to get all the end result that we have more like your levels right rather than levels and ",
+        "week": 1,
+        "page": 42
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 43
+    },
+    {
+        "transcript": " then we care about our lost function but how we optimize your model and then we care about our optimizer that very very relatively related to which method you need to select to make a prediction close to your results so from this chapter we may see that given any cannot give the acts is more like example if it is alike i-mage maybe it should be like in the 40 times right that you get if it is image that's the four images that input what you decide on those four images was this acts do you make this stack for it yes that so that's saying the benefit is equal to four so we need that every time you include the 40-manage function so what's the size of the acts that's the image size is your height of 55 55 55 so what is the size of acts and it has three combination of all the four images ",
+        "week": 1,
+        "page": 44
+    },
+    {
+        "transcript": "it's again the combination of all the four images it's a single combination it's a five out point it's four five four and it's a four three five five five five four but we have three channels of so we we are have 255 by by by three by four by this is the acts and we have different common layers we have desnages we have commuter layers we have chop-out layers we have 20 layers so I will do bunch of layers no matter how we can get some white white white so that we will compare compare with the two targets levels why here so that we can take the most function every day is like a classification problem before we use some entry-level if it is the regression problem",
+        "week": 1,
+        "page": 45
+    },
+    {
+        "transcript": "we may use some like mixed-wear last function and after that we have some kind of optimizer so the purpose of optimizer in trying to update the weights has a for the different layers you have different weights so the optimizer will update the weights over those layers so this is about typical overview of all the different networks there and yes and our multi-tales above this given the four components like the data that like some existing new layers by probably layer for layer normalization layer blah blah right and also that another wire connects into the data x here into the prediction y so it is more like to try to extract some features from the x because the eventually just find a map between x and the y prime that's it ",
+        "week": 1,
+        "page": 46
+    },
+    {
+        "transcript": "and we are in the training the predictions y compared to the true package y with some lost functions there and the lost functions is some I just mentioned this means fair error for the classification you probably care about cross-entry plus no matter it is a binary or multi-new class percent plus",
+        "week": 1,
+        "page": 47
+    },
+    {
+        "transcript": "and we are in the training the predictions y compared to the true package y with some lost functions there and the lost functions is some I just mentioned this means fair error for the classification you probably care about cross-entry plus no matter it is a binary or multi-new class percent plus and we also care about opimizer so as you can see here there is different kind of opimizer now we can select from the first the famous one the SGG what is that yes there is most of the famous part until we have this rms problem this lost function so you can compare about the performance of it you can probably see that which one is the best one you see it from this chat which one SGG chat about this part adabrand rms problem yes the rms problem so you know for this one",
+        "week": 1,
+        "page": 48
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 49
+    },
+    {
+        "transcript": "it is most that I choose that cool so as I start here it is how though take I shift it in a minute time and very fast right so that's the reason why you probably need to use the ms the problem is opimizer and here is again about this new network so now we can skip ",
+        "week": 1,
+        "page": 50
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 51
+    },
+    {
+        "transcript": "this part what about the frameworks so frameworks we already talk about different different platforms so you guys probably notice this before right like we have cafe we have charge we have this piegosh nowadays and in the early stage we have tensorflow and we have the carers and all those different kind of platforms that we can use nowadays or most of them have they have a problem for the different part and actually the defining the static or dynamic generated the process of computational graphs so some like difference between for example these previous tensorflow and piegosh I mean you know the difference between tensorflow and piegosh thank you",
+        "week": 1,
+        "page": 52
+    },
+    {
+        "transcript": "here is the details about some framework like the carers and as in terms of the carers basically use that tensorflow and piegosh is also an interview by the else and and then in our displace i have really a lot of work guys to install some kind of packages if you are now gpu make sure that it's working because that by nice you know that give a good if you know that gpu is not sure you use like google yeah really try the gpu by i even with a handle it's less no pedal i also try to use that that is also pretty good to use that and try so",
+        "week": 1,
+        "page": 53
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 54
+    },
+    {
+        "transcript": "next i really want to talk about the diplomatic in computer video field so that's first talk of what is computer so actually computer video is an inter disciplinary scientific field that deals with how computers can gain high level understanding from digital images or videos what is go after you what do you think what is go after you this kind of image processing what else object object detection to know the answer the mention okay",
+        "week": 1,
+        "page": 55
+    },
+    {
+        "transcript": "yeah this can be i don't stress by humanized i'll say the name of the way some tools just i can okay this also can be okay any guess from our online students so what is the core of the computer any answers maybe because people made some mistakes for example some diagnosis of some other take-chans and computer vision goal is to optimize it and make less mistakes and make people okay yeah that's it now i'll see the details are so best clear for computer vision we want to perceive the story behind the image that's most like we try on standard images right behind the i don't know whether you're going to see and i'm more like in the wild guess you're done",
+        "week": 1,
+        "page": 56
+    },
+    {
+        "transcript": "now let's ask what what does the wild say from this image what can use robot on standard all of these right the robot really about is like the computer so welcome we see for them can see from this image to best",
+        "week": 1,
+        "page": 57
+    },
+    {
+        "transcript": "because they say about all those different numbers because there's different numbers to hear right from 25 to popular these all different numbers that also robots can see that on standard images so that's the task of the computer videos so here for example as i'm actually for the low-level word you want to try to do some image results for the result for the result of the so your value probably just much zoom in or miles of that right in one word point number pair pair session uses hard",
+        "week": 1,
+        "page": 58
+    },
+    {
+        "transcript": "so here it's about two different realisation of their small part and maybe all the one you get some adjustment of images",
+        "week": 1,
+        "page": 59
+    },
+    {
+        "transcript": "for example get a grisky or appears all those grisky are really really really really really really really really really really yeah most of the information on carbon because of this iGG made you really really really and all of these extruder ethh gets the love שמ� can we have life so this extreme editing a scene correct and it a original of the specific part of the image. And we really care about the documentation about this time, we care about the, it's color, one of the second, the RGB subreddering. As a best means, this is the normalization of them.",
+        "week": 1,
+        "page": 60
+    },
+    {
+        "transcript": "Those that were features of the impunity models, for example, like resize, some colors, the explorers, we can some, add use, the gradients, some segments. So what about the median level of the organization? So actually, this is about another, applications, what about the image stitching?",
+        "week": 1,
+        "page": 61
+    },
+    {
+        "transcript": "So it means that you have a stitch different kind of image. It's right. So previously, we probably attacked three photos. So now, how to get this? This one, you may begin making right, and try to stitch something similar, right? As you use your own, you attack one big long image, the similarity. So now, finally, we get this, this is merged, image is there.",
+        "week": 1,
+        "page": 62
+    },
+    {
+        "transcript": "And also, this is about the three, the three-year stitching, so you eventually get some part of it, I don't know, but it's the ones here. So this is about the, I mean, I believe this is called the Sgt. review of medical personalities. So this is the way about the sale. And this part is about horizontal view of the sale. So I mean, this is about, certainly rather, you just realize the part.",
+        "week": 1,
+        "page": 63
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 64
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 65
+    },
+    {
+        "transcript": "So this is about the impression of us available. And we also have another view of our card, boom, because you can now see the top right, the end part of the, sorry, more questions. ",
+        "week": 1,
+        "page": 66
+    },
+    {
+        "transcript": "So, another way to like just include this, if you are a hero, so with this, like, you can get some little bit of the observation of the image. But you can even give your asses like three, right? And then also, this is another more three of it, and even we have more like in the paintings of the time. And another is about some a structure of light skin, about that.",
+        "week": 1,
+        "page": 67
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 68
+    },
+    {
+        "transcript": "So this is about the, I mean, I believe this is called the Sgt. review of medical personalities. So this is the way about the sale. And this part is about horizontal view of the sale.",
+        "week": 1,
+        "page": 69
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 70
+    },
+    {
+        "transcript": "So I mean, this is about, certainly rather, you just realize the part. So this is about the impression of us available. And we also have another view of our card, boom, because you can now see the top right, the end part of the, sorry, more questions. So, another way to like just include this, if you are a hero, so with this, like, you can get some little bit of the observation of the image.",
+        "week": 1,
+        "page": 71
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 72
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 73
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 74
+    },
+    {
+        "transcript": "But you can even give your asses like three, right? And then also, this is another more three of it, and even we have more like in the paintings of the time. And another is about some a structure of light skin, about that. So for example, in this case, it's already finding, it's already about the final batch of the image.",
+        "week": 1,
+        "page": 75
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 76
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 77
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 78
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 79
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 80
+    },
+    {
+        "transcript": "You can get this image, this is the car, so the three is right, you can really know about the difference between different objects. And then we also have another task I call about optical growth",
+        "week": 1,
+        "page": 81
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 82
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 83
+    },
+    {
+        "transcript": "So for example, in this case, it's already finding, it's already about the final batch of the image. You can get this image, this is the car, so the three is right, you can really know about the difference between different objects. And then we also have another task I call about optical growth, so that we really come here about the movie objects in the image, for example, this bicycle",
+        "week": 1,
+        "page": 84
+    },
+    {
+        "transcript": "so that we really come here about the movie objects in the image, for example, this bicycle. And then we can use the hands, how your hands move, so I try to detect your hands. And even our time lapse, but this is not working there. But here is also a simulation of all the middle level of vision that you guys might want to do with it. As for the final vision, so we definitely have some fancy environment for it.",
+        "week": 1,
+        "page": 85
+    },
+    {
+        "transcript": "or example, putting it in the image, that is, we tried to classify that it can be a lot of objects, like the dog bicycle, like the class in the right, can see a lot of different stuff here. And also, why you detect weird about those different objects, like you detect also long locations, like the dog bicycle, and then this class in the right one. And we also have now tasks as the semantics, and the initial vision, which means that you want to segment each pixel of your image as a course, the road, the trees, etc",
+        "week": 1,
+        "page": 86
+    },
+    {
+        "transcript": "And also we make a box of instant instant segmentation, which means that you basically only care about part of your image. For example, now we just care about human being, care about the cars,",
+        "week": 1,
+        "page": 87
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 88
+    },
+    {
+        "transcript": "but we grow our balls just be a feelings right. So here also another kind of Malaysian, highly or like another, like a single image, just really immediate and again playing in the super resolution, get some retrieval of images, and many others now. Another case is why we need to start in a period right, because now we have really curious, how you make use of the video, catch a per day right now from all of the different media online, like the picture, like the Facebook and the internet, like several, several, lots of stuff.",
+        "week": 1,
+        "page": 89
+    },
+    {
+        "transcript": "So sometimes you want your project to be made use right, and some images from the space from yourself, not hard to make use, but long images, huge number of digital applications. And also the applications, say in the classics, try to detect some importance as a moralizing, you see it from moving. So now keep a human eye, a human face right, if you will keep a zoom in, this image you may find more details, for example, you care about this eye, and once you keep a zoom in, you can find the type, that keep the human right, just like this yellow, this man, it will detect some faces right.",
+        "week": 1,
+        "page": 90
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 91
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 92
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 93
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 94
+    },
+    {
+        "transcript": "So now keep a human eye, a human face right, if you will keep a zoom in, this image you may find more details, for example, you care about this eye, and once you keep a zoom in, you can find the type, that keep the human right, just like this yellow, this man, it will detect some faces right.",
+        "week": 1,
+        "page": 95
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 96
+    },
+    {
+        "transcript": "ou can see more like some things from moving, but nowadays, we can do that right. And also we have the OCR, the talk people, after the combinations here.",
+        "week": 1,
+        "page": 97
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 98
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 99
+    },
+    {
+        "transcript": "So in the first page, you recognize your digits, they arrive, and the digits there. And this also like a license plate of meters.",
+        "week": 1,
+        "page": 100
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 101
+    },
+    {
+        "transcript": "So once your pencil is engraved, you will automatically really license the plate right, so then give your viewers, there's still a lot of money. And also care about the automatic check processing. So now you guys can use online mobile app to process the check, you're from instead out, go back into the bank right, and also now there can now applications, that be work.",
+        "week": 1,
+        "page": 102
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 103
+    },
+    {
+        "transcript": "And also the application like a face detection, so nearly all the camera detects a face is a real time one. You know what? They can focus on the, you know, can you talk more here? Yes, is that true? And also the knowledge that the data is produces there. And we also care about, well, not only one detect face detects the face, but also we want to analyze the face, so right? Where is known some medical is kind of different.",
+        "week": 1,
+        "page": 104
+    },
+    {
+        "transcript": "But sometimes we have a part of them, the face. And the may not, then we cannot distinguish, okay? That will be a better idea. It's nice to shoot, proposing changes for the images. Right? It's about the other members, and keep changing the images, raising them. You see how many hours they change their model. The blame on the video is very long to have more, more than months to months or months that's very common",
+        "week": 1,
+        "page": 105
+    },
+    {
+        "transcript": "It's because it results many days you cannot get a better one. We have about the latest based interpretation. And it gives us how we see the interest. And now this is this generation message that become one more popular. I don't know whether that can be used. This is very, and I'm generating some strange stuff, right? And this is the positive, the catcher. This is the future. The future. Given the views of the image, like this, the human, we like to have. It's crazy. But anyway, those are coming, come about some image generation part. If you guys are interested in using this paper, you can see more details about how they do on the project. ",
+        "week": 1,
+        "page": 106
+    },
+    {
+        "transcript": "For others, it should be very similar about the track. Seconds is to follow the changes. And then the last one, the chance is about share, for church, for church. It's not really a scene, which is just the interest from start. But I'm not the method behind it is that it really turns. In many models, it's actually produced kind of messages. Again, the generic network. The guy who is among the non-stop, that's the dirty office. That's probably a stop here. Start this one. Let's put them to the slides.",
+        "week": 1,
+        "page": 107
+    },
+    {
+        "transcript": "What you might expect. Now, you really think this is a very difficult to verify. Another application is about spots, is try to detect where are you and how fast you are. And also try to distinguish your different gestures that is passed. And even about my city is now the, what does my city is really because you can recognize or different objects during your streets. His special knowledge is the so many cameras around us. And he's a person and the humans and the people. Especially for the access. Very huge. Go back and use videos. And we have that. Several ideas. Talked about the idea of the small time in red area.",
+        "week": 1,
+        "page": 108
+    },
+    {
+        "transcript": "It's moving. Even today some culture in blue area, whether watching, drawing, visualizing music has to have lesbianism. Because maybe it are the low exposure light of new and momophobic but therefore I think it's very hard. Yeah. especially whether it is electric, electric, or non-stop. Let's say you find a military base that we want to do, where our enemies and we want to do some bombs to the enemy. And this also is successfully valid in the country. And then we have smart cars. So you guys already noticed about we want to use Tesla or Tony's daughter in Star Prime although you have some competencies. Another self-driving car.",
+        "week": 1,
+        "page": 109
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 110
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 111
+    },
+    {
+        "transcript": "And I can mention it is about the detection tracking cars on the cars can be about the security. You see you have so many cameras behind you. There's just some people just want to see whether there is you or not. And you have a tourism. If I know who I work, you can support other countries. You have problems and understand that I am using a phone to get a translation. It's fine. And also there are so many different camera robots. Like this mask. Some Amazon pick up the challenge in we use robots and the U.S. and they are using this machine to deliver it. ",
+        "week": 1,
+        "page": 112
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 113
+    },
+    {
+        "transcript": "I don't know whether they are. Yeah. You can go on. Anyway, try to play the. Yeah. Not really. Is the right. It's right about this. The real. I want to be about the virtual world. Like three years. We are going to be about six to six degrees. And catch everything about. And since they. And they are not our. Massages. And they are even more applications in the. Different fields, for example, in the banking",
+        "week": 1,
+        "page": 114
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 115
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 116
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 117
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 118
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 119
+    },
+    {
+        "transcript": "",
+        "week": 1,
+        "page": 120
+    }
+]

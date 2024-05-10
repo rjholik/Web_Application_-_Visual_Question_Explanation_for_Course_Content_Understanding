@@ -93,9 +93,37 @@ body {
 .menu-item-title, .course-label, .return-arrow-title {
     text-align: center; /* Center text below images */
     font-size: 14px; /* Adjust font size as necessary */
-    color: white; /* Color for visibility */
+    font-weight: bold; /* Make the text bold */
+    color: rgb(255, 255, 255); /* Color for visibility */
     text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.75); /* Text shadow for readability */
     margin-top: 0px; /* Consistent space between image and text */
+}
+
+/* Style for buttons within menu items */
+.menu-item-button {
+    font-size: 12px; /* Adjust font size as necessary */
+    font-weight: bold; /* Make the text bold */
+    overflow: hidden; /* Prevent text from overflowing */
+    text-overflow: ellipsis; /* Add ellipsis if text is too long */
+    white-space: nowrap; /* Keep the text on one line */
+    width: 85%;
+    padding: 5px;
+    border: 1px solid #ccc;
+    background-color: #fff; /* Ensure a contrasting background */
+    color: #000; /* Ensure text is visible */
+    text-align: center;
+    cursor: pointer;
+    border-radius: 8px; /* Adds rounded corners, adjust radius as desired */
+}
+
+.menu-item-button:hover {
+    background-color: #eee; /* Slightly darker background on hover */
+}
+
+.menu-item-button:focus {
+    outline: none; /* Only if border change is clearly visible */
+    border-color: #004499;
+    background-color: #e6e6e6;
 }
 
 .rounded-image {

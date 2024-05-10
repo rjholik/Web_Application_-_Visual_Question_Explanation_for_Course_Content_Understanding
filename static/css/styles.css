@@ -98,6 +98,31 @@ body {
     margin-top: 0px; /* Consistent space between image and text */
 }
 
+/* Style for buttons within menu items */
+.menu-item-button {
+    font-size: 16px; /* Adjust font size as necessary */
+    overflow: hidden; /* Prevent text from overflowing */
+    text-overflow: ellipsis; /* Add ellipsis if text is too long */
+    white-space: nowrap; /* Keep the text on one line */
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #fff; /* Ensure a contrasting background */
+    color: #000; /* Ensure text is visible */
+    text-align: center;
+    cursor: pointer;
+}
+
+.menu-item-button:hover {
+    background-color: #eee; /* Slightly darker background on hover */
+}
+
+.menu-item-button:focus {
+    outline: none; /* Only if border change is clearly visible */
+    border-color: #004499;
+    background-color: #e6e6e6;
+}
+
 .rounded-image {
     width: 100%; /* Adjust width as needed */
     max-width: 600px; /* Maximum width to ensure it fits well */
@@ -169,19 +194,20 @@ body {
     color: black !important; /* Changes text and icon color to black on hover */
 }
 
+
 .chat-window {
     position: fixed;
     right: -35%; /* Start off-screen */
     width: 35%;
     height: 80%;
-    background-color: rgba(0, 123, 255, 0.45);
+    background-color: rgba(0, 123, 255, 0.2);
     transition: right 0.5s;
+    overflow-y: auto;
     border-radius: 10px;
     z-index: 1000;
     color: white;
-    display: none; /* Start as hidden */
-    flex-direction: column;
-    overflow: hidden;
+    display: flex;
+    flex-direction: column; /* Makes child elements stack vertically */
 }
 
 .chat-window.open {
@@ -200,7 +226,6 @@ body {
 
 .buttons-container {
     display: flex;
-    flex-direction: column;
     align-items: center;
 }
 
@@ -217,7 +242,9 @@ body {
     resize: none; /* Disallow resizing */
     margin-right: 10px; /* Space between textarea and send button */
 }
-
+.speaker-btn{
+    margin-left: 10px;
+}
 .send-btn {
     width: 30px; /* Matching the height of the input area */
     height: 30px;
@@ -229,6 +256,7 @@ body {
     color: white;
     border: none;
     cursor: pointer;
+    margin-left: 10px;
 }
 
 .send-btn i {
@@ -250,27 +278,75 @@ body {
     color: white;
 }
 
+.message-box {
+    display: none; /* Hidden by default */
+    position: absolute;
+    bottom: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent black */
+    color: white;
+    text-align: center;
+    padding: 10px;
+    font-size: 16px;
+    z-index: 10;
+}
+
+.chat-message {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 5px;
+    border-radius: 10px;
+}
+
+.avatar {
+    width: 24px; /* Adjust based on your preference */
+    height: 24px; /* Adjust to match width for square aspect ratio */
+    margin: 0 10px;
+}
+
+.message-text {
+    background-color: #f1f1f1;
+    padding: 10px;
+    border-radius: 10px;
+    color: #000; /* Ensure text is readable on light background */
+    max-width: 80%; /* Adjust based on your layout */
+}
+
+.user-message .message-text {
+    background-color: #007bff;
+    color: #fff; /* Text color for user messages */
+}
+
+.model-message .message-text {
+    background-color: #343a40;
+    color: #fff; /* Text color for model messages */
+}
+
+
 .user-message {
-    background-color: #007bff; /* User message color */
     align-self: flex-end; /* Align to the right */
     border-bottom-right-radius: 0; /* Make one corner squared */
 }
 
 .model-message {
-    background-color: #343a40; /* Model message color */
     align-self: flex-start; /* Align to the left */
     border-bottom-left-radius: 0; /* Make one corner squared */
 }
 
 
+/* Chat window*/
 .chat-area {
     flex-grow: 1; /* Take up all available space */
     display: flex;
-    flex-direction: column-reverse; /* Newest messages at the bottom */
-    overflow-y: auto; /* Only scroll this area when content overflows */
-    height: calc(100% - 80px); /* Adjust height to account for input area */
+    flex-direction: column;
+    overflow-y: auto;
+    height: 100%; /* Make sure the chat area takes the full height */
+    flex-grow: 1; /* Allows chat area to take up remaining space */
+    overflow-y: auto; /* Enables scrolling for overflow content */
 }
-
 /* Ensure the microphone button aligns properly below the send button */
 .mic-btn {
     width: 30px; /* Adjust if necessary */
